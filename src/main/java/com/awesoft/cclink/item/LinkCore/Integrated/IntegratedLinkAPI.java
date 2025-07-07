@@ -1,18 +1,12 @@
-package com.awesoft.cclink.item.LinkCore;
+package com.awesoft.cclink.item.LinkCore.Integrated;
 
 import com.awesoft.cclink.CCLink;
-import com.awesoft.cclink.hudoverlay.packets.PacketManager;
+import com.awesoft.cclink.item.LinkCore.OverlayMethods;
 import com.awesoft.cclink.libs.LuaConverter;
 import com.awesoft.cclink.libs.PacketCooldownManager;
 import com.awesoft.cclink.libs.RaycastingUtil;
-import dan200.computercraft.api.lua.ILuaAPI;
-import dan200.computercraft.api.lua.LuaException;
-import dan200.computercraft.api.lua.LuaFunction;
-import dan200.computercraft.api.lua.MethodResult;
-import dan200.computercraft.shared.computer.blocks.ComputerPeripheral;
-import dan200.computercraft.shared.peripheral.modem.ModemPeripheral;
-import dan200.computercraft.shared.peripheral.speaker.SpeakerPeripheral;
-import dan200.computercraft.shared.pocket.peripherals.PocketModemPeripheral;
+import dan200.computercraft.api.lua.*;
+import dan200.computercraft.api.pocket.IPocketAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
@@ -29,31 +23,25 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
-
-import javax.annotation.Nullable;
-import java.util.*;
-import dan200.computercraft.api.lua.*;
-import dan200.computercraft.api.pocket.IPocketAccess;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.util.*;
-
-import static com.awesoft.cclink.item.LinkCore.LinkCoreComputerItem.getServerComputer;
 
 /**
  * @cc.module commands
  * @cc.since 1.7
  */
-public class LinkAPI implements ILuaAPI {
-    private static final Logger LOG = LoggerFactory.getLogger(LinkAPI.class);
+public class IntegratedLinkAPI implements ILuaAPI {
+    private static final Logger LOG = LoggerFactory.getLogger(IntegratedLinkAPI.class);
 
     private final IComputerSystem computer;
     private final IPocketAccess pocket;
 
 
-    public LinkAPI(IComputerSystem computer, IPocketAccess pocket) {
+    public IntegratedLinkAPI(IComputerSystem computer, IPocketAccess pocket) {
         this.computer = computer;
         this.pocket = pocket;
 
@@ -230,6 +218,9 @@ public class LinkAPI implements ILuaAPI {
         Player plr = getPlayer();
         if (plr != null) {
             info.put("name", plr.getGameProfile().getName());
+            info.put("x", Math.floor(plr.getX()));
+            info.put("y", Math.floor(plr.getY()));
+            info.put("z", Math.floor(plr.getZ()));
             info.put("dimension", plr.level().dimension().location().toString());
             info.put("health", plr.getHealth());
             info.put("hunger", plr.getFoodData().getFoodLevel());
@@ -304,10 +295,10 @@ public class LinkAPI implements ILuaAPI {
 
                 info.put("id", ForgeRegistries.ENTITY_TYPES.getKey(entity.getType()).toString());
                 info.put("uuid", entity.getUUID().toString());
+                info.put("x", entity.getX());
+                info.put("y", entity.getY());
+                info.put("z", entity.getZ());
                 info.put("dimension", entity.level().dimension().location().toString());
-                info.put("x", Math.floor(entity.getX()));
-                info.put("y", Math.floor(entity.getY()));
-                info.put("z", Math.floor(entity.getZ()));
                 info.put("yaw", entity.getViewYRot(1));
                 info.put("pitch", entity.getViewXRot(1));
                 if (entity instanceof LivingEntity livingEntity) {

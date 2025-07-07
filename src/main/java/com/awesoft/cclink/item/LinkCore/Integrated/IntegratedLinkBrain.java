@@ -1,5 +1,6 @@
-package com.awesoft.cclink.item.LinkCore;
+package com.awesoft.cclink.item.LinkCore.Integrated;
 
+import com.awesoft.cclink.item.LinkCore.Integrated.IntegratedLinkHolder;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.pocket.IPocketAccess;
 import dan200.computercraft.api.pocket.IPocketUpgrade;
@@ -7,15 +8,6 @@ import dan200.computercraft.api.upgrades.UpgradeData;
 import dan200.computercraft.core.computer.ComputerSide;
 import dan200.computercraft.shared.common.IColouredItem;
 import dan200.computercraft.shared.computer.core.ServerComputer;
-
-import dan200.computercraft.shared.network.server.ServerNetworking;
-
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
-import javax.annotation.Nullable;
-
 import dan200.computercraft.shared.pocket.peripherals.PocketModemPeripheral;
 import dan200.computercraft.shared.pocket.peripherals.PocketSpeakerPeripheral;
 import net.minecraft.nbt.CompoundTag;
@@ -26,9 +18,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
-public final class LinkBrain implements IPocketAccess {
-    private final LinkServerComputer computer;
-    private LinkHolder holder;
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+
+public final class IntegratedLinkBrain implements IPocketAccess {
+    private final IntegratedLinkServerComputer computer;
+    private IntegratedLinkHolder holder;
     private Vec3 position;
     private boolean dirty = false;
     @Nullable
@@ -36,19 +33,21 @@ public final class LinkBrain implements IPocketAccess {
     private int colour = -1;
     private int lightColour = -1;
 
-    public LinkBrain(LinkHolder holder, @Nullable UpgradeData<IPocketUpgrade> upgrade, ServerComputer.Properties properties) {
-        this.computer = new LinkServerComputer(this, holder, properties);
+    public IntegratedLinkBrain(IntegratedLinkHolder holder, @Nullable UpgradeData<IPocketUpgrade> upgrade, ServerComputer.Properties properties) {
+        this.computer = new IntegratedLinkServerComputer(this, holder, properties);
         this.holder = holder;
         this.position = holder.pos();
         this.upgrade = UpgradeData.copyOf(upgrade);
         this.invalidatePeripheral();
+        this.computer.setPeripheral(ComputerSide.TOP,new PocketModemPeripheral(false,this));
+        this.computer.setPeripheral(ComputerSide.BACK,new PocketSpeakerPeripheral(this));
     }
 
-    public LinkServerComputer computer() {
+    public IntegratedLinkServerComputer computer() {
         return this.computer;
     }
 
-    LinkHolder holder() {
+    IntegratedLinkHolder holder() {
         return this.holder;
     }
 
@@ -56,15 +55,15 @@ public final class LinkBrain implements IPocketAccess {
         this.computer.setPeripheral(side,peripheral);
     }
 
-    public void updateHolder(LinkHolder newHolder) {
+    public void updateHolder(IntegratedLinkHolder newHolder) {
         this.position = newHolder.pos();
         this.computer.setPosition(newHolder.level(), newHolder.blockPos());
-        LinkHolder oldHolder = this.holder;
+        IntegratedLinkHolder oldHolder = this.holder;
         if (!this.holder.equals(newHolder)) {
             this.holder = newHolder;
             ServerPlayer var10000;
-            if (oldHolder instanceof LinkHolder.PlayerHolder) {
-                LinkHolder.PlayerHolder p = (LinkHolder.PlayerHolder)oldHolder;
+            if (oldHolder instanceof IntegratedLinkHolder.PlayerHolder) {
+                IntegratedLinkHolder.PlayerHolder p = (IntegratedLinkHolder.PlayerHolder)oldHolder;
                 var10000 = p.entity();
             } else {
                 var10000 = null;
@@ -72,8 +71,8 @@ public final class LinkBrain implements IPocketAccess {
 
             /*
             ServerPlayer oldPlayer = var10000;
-            if (newHolder instanceof LinkHolder.PlayerHolder) {
-                LinkHolder.PlayerHolder player = (LinkHolder.PlayerHolder)newHolder;
+            if (newHolder instanceof IntegratedLinkHolder.PlayerHolder) {
+                IntegratedLinkHolder.PlayerHolder player = (IntegratedLinkHolder.PlayerHolder)newHolder;
                 if (player.entity() != oldPlayer) {
                     ServerNetworking.sendToPlayer(new PocketComputerDataMessage(this.computer, true), player.entity());
                 }
@@ -90,7 +89,7 @@ public final class LinkBrain implements IPocketAccess {
         } else {
             this.dirty = false;
             IColouredItem.setColourBasic(stack, this.colour);
-            LinkCoreComputerItem.setUpgrade(stack, UpgradeData.copyOf(this.upgrade));
+            IntegratedLinkCoreComputerItem.setUpgrade(stack, UpgradeData.copyOf(this.upgrade));
             return true;
         }
     }
@@ -105,9 +104,9 @@ public final class LinkBrain implements IPocketAccess {
 
     @Nullable
     public Entity getEntity() {
-        LinkHolder var2 = this.holder;
+        IntegratedLinkHolder var2 = this.holder;
         Entity var10000;
-        if (var2 instanceof LinkHolder.EntityHolder entity) {
+        if (var2 instanceof IntegratedLinkHolder.EntityHolder entity) {
             if (this.holder.isValid(this.computer)) {
                 var10000 = entity.entity();
                 return var10000;

@@ -1,15 +1,18 @@
-package com.awesoft.cclink;
+package com.awesoft.cclink.Registration;
 
+import com.awesoft.cclink.item.LinkCore.Integrated.IntegratedLinkAPI;
 import com.awesoft.cclink.item.LinkCore.LinkAPI;
 import dan200.computercraft.api.ComputerCraftAPI;
-import dan200.computercraft.api.component.ComputerComponents;
-import dan200.computercraft.shared.computer.apis.CommandAPI;
 
 public class APIRegistry {
     public static void register() {
         ComputerCraftAPI.registerAPIFactory(computer -> {
             var pocketAccess = computer.getComponent(CCLinkComponents.LINK);
             return pocketAccess == null ? null : new LinkAPI(computer, pocketAccess);
+        });
+        ComputerCraftAPI.registerAPIFactory(computer -> {
+            var pocketAccess = computer.getComponent(CCLinkComponents.INTEGRATED_LINK);
+            return pocketAccess == null ? null : new IntegratedLinkAPI(computer, pocketAccess);
         });
     }
 }

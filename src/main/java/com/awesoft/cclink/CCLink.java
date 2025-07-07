@@ -1,10 +1,11 @@
 package com.awesoft.cclink;
 
+import com.awesoft.cclink.Registration.APIRegistry;
+import com.awesoft.cclink.Registration.ItemRegistry;
+import com.awesoft.cclink.Registration.TabInit;
 import com.awesoft.cclink.networking.OverlayNetworkHandler;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;

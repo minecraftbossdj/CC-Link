@@ -1,4 +1,4 @@
-package com.awesoft.cclink.item.LinkCore;
+package com.awesoft.cclink.item.LinkCore.Integrated;
 
 import com.awesoft.cclink.CCLink;
 import com.awesoft.cclink.Registration.ItemRegistry;
@@ -23,10 +23,6 @@ import dan200.computercraft.shared.network.container.ComputerContainerData;
 import dan200.computercraft.shared.platform.PlatformHelper;
 import dan200.computercraft.shared.util.InventoryUtil;
 import dan200.computercraft.shared.util.NBTUtil;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -48,7 +44,12 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import top.theillusivec4.curios.api.CuriosApi;
 
-public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia, IColouredItem {
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
+public class IntegratedLinkCoreComputerItem extends Item implements IComputerItem, IMedia, IColouredItem {
     private static final String NBT_UPGRADE = "Upgrade";
     private static final String NBT_UPGRADE_INFO = "UpgradeInfo";
     public static final String NBT_ON = "On";
@@ -56,7 +57,7 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
     private static final String NBT_SESSION = "SessionId";
     private final ComputerFamily family;
 
-    public LinkCoreComputerItem(Item.Properties settings, ComputerFamily family) {
+    public IntegratedLinkCoreComputerItem(Properties settings, ComputerFamily family) {
         super(settings);
         this.family = family;
     }
@@ -85,10 +86,10 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
         return result;
     }
 
-    public void tick(ItemStack stack, LinkHolder holder, boolean passive) {
-        LinkBrain brain;
+    public void tick(ItemStack stack, IntegratedLinkHolder holder, boolean passive) {
+        IntegratedLinkBrain brain;
         if (passive) {
-            LinkServerComputer computer = getServerComputer(holder.level().getServer(), stack);
+            IntegratedLinkServerComputer computer = getServerComputer(holder.level().getServer(), stack);
             if (computer == null) {
                 return;
             }
@@ -110,9 +111,9 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
 
     }
 
-    private boolean updateItem(ItemStack stack, LinkBrain brain) {
+    private boolean updateItem(ItemStack stack, IntegratedLinkBrain brain) {
         boolean changed = brain.updateItem(stack);
-        LinkServerComputer computer = brain.computer();
+        IntegratedLinkServerComputer computer = brain.computer();
         int id = computer.getID();
         if (id != this.getComputerID(stack)) {
             changed = true;
@@ -138,7 +139,7 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
         if (!world.isClientSide && entity instanceof ServerPlayer player) {
             int slot = InventoryUtil.getInventorySlotFromCompartment(player, compartmentSlot, stack);
             if (slot >= 0) {
-                this.tick(stack, new LinkHolder.PlayerHolder(player, slot), false);
+                this.tick(stack, new IntegratedLinkHolder.PlayerHolder(player, slot), false);
             }
         }
     }
@@ -146,7 +147,7 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
         Level level = entity.level();
         if (!level.isClientSide && level.getServer() != null) {
-            this.tick(stack, new LinkHolder.ItemEntityHolder(entity), true);
+            this.tick(stack, new IntegratedLinkHolder.ItemEntityHolder(entity), true);
             return false;
         } else {
             return false;
@@ -162,9 +163,9 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
         ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
         if (!world.isClientSide) {
             if (helmet.getItem() == ItemRegistry.LINK_INTERFACE.get()) {
-                LinkHolder.PlayerHolder holder = new LinkHolder.PlayerHolder((ServerPlayer) player, InventoryUtil.getHandSlot(player, hand));
-                LinkBrain brain = this.getOrCreateBrain((ServerLevel) world, holder, stack);
-                LinkServerComputer computer = brain.computer();
+                IntegratedLinkHolder.PlayerHolder holder = new IntegratedLinkHolder.PlayerHolder((ServerPlayer) player, InventoryUtil.getHandSlot(player, hand));
+                IntegratedLinkBrain brain = this.getOrCreateBrain((ServerLevel) world, holder, stack);
+                IntegratedLinkServerComputer computer = brain.computer();
                 computer.turnOn();
                 boolean stop = false;
                 IPocketUpgrade upgrade = getUpgrade(stack);
@@ -178,9 +179,9 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
                 }
             } else {
                 CuriosApi.getCuriosHelper().findFirstCurio(player, ItemRegistry.LINK_INTERFACE.get()).ifPresent((slotResult) -> {
-                    LinkHolder.PlayerHolder holder = new LinkHolder.PlayerHolder((ServerPlayer) player, InventoryUtil.getHandSlot(player, hand));
-                    LinkBrain brain = this.getOrCreateBrain((ServerLevel) world, holder, stack);
-                    LinkServerComputer computer = brain.computer();
+                    IntegratedLinkHolder.PlayerHolder holder = new IntegratedLinkHolder.PlayerHolder((ServerPlayer) player, InventoryUtil.getHandSlot(player, hand));
+                    IntegratedLinkBrain brain = this.getOrCreateBrain((ServerLevel) world, holder, stack);
+                    IntegratedLinkServerComputer computer = brain.computer();
                     computer.turnOn();
                     boolean stop = false;
                     IPocketUpgrade upgrade = getUpgrade(stack);
@@ -199,15 +200,15 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
         return new InteractionResultHolder(InteractionResult.sidedSuccess(world.isClientSide), stack);
     }
 
-    public void open(Player player, ItemStack stack, LinkHolder holder, boolean isTypingOnly) {
-        LinkBrain brain = this.getOrCreateBrain(holder.level(), holder, stack);
-        LinkServerComputer computer = brain.computer();
+    public void open(Player player, ItemStack stack, IntegratedLinkHolder holder, boolean isTypingOnly) {
+        IntegratedLinkBrain brain = this.getOrCreateBrain(holder.level(), holder, stack);
+        IntegratedLinkServerComputer computer = brain.computer();
         computer.turnOn();
         openImpl(player, stack, holder, isTypingOnly, computer);
     }
 
     //the thing thats fucking over everything
-    private static void openImpl(Player player, ItemStack stack, LinkHolder holder, boolean isTypingOnly, ServerComputer computer) {
+    private static void openImpl(Player player, ItemStack stack, IntegratedLinkHolder holder, boolean isTypingOnly, ServerComputer computer) {
         PlatformHelper.get().openMenu(player, stack.getHoverName(), (id, inventory, entity) -> new ComputerMenuWithoutInventory(isTypingOnly ? (MenuType)Menus.POCKET_COMPUTER_NO_TERM.get() : (MenuType)Menus.COMPUTER.get(), id, inventory, (p) -> holder.isValid(computer), computer), new ComputerContainerData(computer, stack));
     }
 
@@ -240,11 +241,11 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
         return CCLink.MODID;
     }
 
-    private LinkBrain getOrCreateBrain(ServerLevel level, LinkHolder holder, ItemStack stack) {
+    private IntegratedLinkBrain getOrCreateBrain(ServerLevel level, IntegratedLinkHolder holder, ItemStack stack) {
         ServerComputerRegistry registry = ServerContext.get(level.getServer()).registry();
-        LinkServerComputer computer = getServerComputer(registry, stack);
+        IntegratedLinkServerComputer computer = getServerComputer(registry, stack);
         if (computer != null) {
-            LinkBrain brain = computer.getBrain();
+            IntegratedLinkBrain brain = computer.getBrain();
             brain.updateHolder(holder);
             return brain;
         } else {
@@ -254,8 +255,8 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
                 setComputerID(stack, computerID);
             }
 
-            LinkBrain brain = new LinkBrain(holder, getUpgradeWithData(stack), ServerComputer.properties(this.getComputerID(stack), this.getFamily()).label(this.getLabel(stack)));
-            LinkServerComputer computerSigma = brain.computer();
+            IntegratedLinkBrain brain = new IntegratedLinkBrain(holder, getUpgradeWithData(stack), ServerComputer.properties(this.getComputerID(stack), this.getFamily()).label(this.getLabel(stack)));
+            IntegratedLinkServerComputer computerSigma = brain.computer();
             CompoundTag tag = stack.getOrCreateTag();
             tag.putInt("SessionId", registry.getSessionID());
             tag.putUUID("InstanceId", computerSigma.register());
@@ -270,16 +271,16 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
     }
 
     public static boolean isServerComputer(ServerComputer computer, ItemStack stack) {
-        return stack.getItem() instanceof LinkCoreComputerItem && getServerComputer(computer.getLevel().getServer(), stack) == computer;
+        return stack.getItem() instanceof IntegratedLinkCoreComputerItem && getServerComputer(computer.getLevel().getServer(), stack) == computer;
     }
 
     @Nullable
-    public static LinkServerComputer getServerComputer(ServerComputerRegistry registry, ItemStack stack) {
-        return (LinkServerComputer)registry.get(getSessionID(stack), getInstanceID(stack));
+    public static IntegratedLinkServerComputer getServerComputer(ServerComputerRegistry registry, ItemStack stack) {
+        return (IntegratedLinkServerComputer)registry.get(getSessionID(stack), getInstanceID(stack));
     }
 
     @Nullable
-    public static LinkServerComputer getServerComputer(MinecraftServer server, ItemStack stack) {
+    public static IntegratedLinkServerComputer getServerComputer(MinecraftServer server, ItemStack stack) {
         return getServerComputer(ServerContext.get(server).registry(), stack);
     }
 
@@ -288,7 +289,7 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
         if (tag != null) {
             MinecraftServer server = level.getServer();
             if (server != null) {
-                LinkServerComputer computer = getServerComputer(server, stack);
+                IntegratedLinkServerComputer computer = getServerComputer(server, stack);
                 if (computer != null) {
                     computer.getBrain().setUpgrade(getUpgradeWithData(stack));
                 }
@@ -312,7 +313,7 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
 
     public ItemStack changeItem(ItemStack stack, Item newItem) {
         ItemStack var10000;
-        if (newItem instanceof LinkCoreComputerItem pocket) {
+        if (newItem instanceof IntegratedLinkCoreComputerItem pocket) {
             var10000 = pocket.create(this.getComputerID(stack), this.getLabel(stack), this.getColour(stack), getUpgradeWithData(stack));
         } else {
             var10000 = ItemStack.EMPTY;
