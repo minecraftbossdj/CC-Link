@@ -40,7 +40,7 @@ public final class IntegratedLinkBrain implements IPocketAccess {
         this.upgrade = UpgradeData.copyOf(upgrade);
         this.invalidatePeripheral();
         this.computer.setPeripheral(ComputerSide.TOP,new PocketModemPeripheral(false,this));
-        this.computer.setPeripheral(ComputerSide.BACK,new PocketSpeakerPeripheral(this));
+        this.computer.setPeripheral(ComputerSide.BOTTOM,new PocketSpeakerPeripheral(this));
     }
 
     public IntegratedLinkServerComputer computer() {
