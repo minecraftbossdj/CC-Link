@@ -20,6 +20,8 @@ public class TabInit {
                     .icon(() -> new ItemStack(ItemRegistry.LINK_CORE.get()))
                     .displayItems((displayParms,output) ->{
                         output.accept(ItemRegistry.LINK_CORE.get());
+                        output.accept(ItemRegistry.INTEGRATED_LINK_CORE.get());
+                        output.accept(ItemRegistry.LINK_CORE_COMMAND.get());
                         output.accept(ItemRegistry.LINK_INTERFACE.get());
                     })
                     .build()
