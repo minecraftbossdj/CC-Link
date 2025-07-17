@@ -1,0 +1,29 @@
+{
+  "type": "cclink:link_turtle_id_copy",
+  "pattern": [
+    "DMD",
+    "GTE",
+    "GGG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "M": {
+      "item": "computercraft:wireless_modem_advanced"
+    },
+    "E": {
+      "item": "minecraft:ender_eye"
+    },
+    "T": {
+      "item": "computercraft:turtle_advanced"
+    }
+  },
+  "result": {
+    "item": "cclink:link_turtle_advanced",
+    "count": 1
+  }
+}

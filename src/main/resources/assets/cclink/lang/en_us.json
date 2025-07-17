@@ -9,5 +9,6 @@
   "item.cclink.link_core_command.upgraded": "Link Core Enhanced (Command)",
   "block.cclink.link_turtle_advanced": "Link Turtle",
   "block.cclink.link_turtle_advanced.upgraded": "Link Turtle Enhanced",
+  "block.cclink.link_turtle_advanced.upgraded_twice": "Link Turtle Enhanced",
   "item.cclink.link_key": "Link Key"
 }

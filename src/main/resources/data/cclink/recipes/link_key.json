@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " M ",
+    " A ",
+    " P "
+  ],
+  "key": {
+    "A": {
+      "item": "computercraft:monitor_advanced"
+    },
+    "M": {
+      "item": "computercraft:wireless_modem_advanced"
+    },
+    "P": {
+      "item": "computercraft:pocket_computer_normal"
+    }
+  },
+  "result": {
+    "item": "cclink:link_key",
+    "count": 1
+  }
+}
