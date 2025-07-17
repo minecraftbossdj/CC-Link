@@ -28,7 +28,7 @@ side = "BOTH"
 [[dependencies.cclink]]
 modId = "computercraft"
 mandatory = true
-versionRange = "1.95.3"
+versionRange = "[1.115.0,)"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.cclink]]

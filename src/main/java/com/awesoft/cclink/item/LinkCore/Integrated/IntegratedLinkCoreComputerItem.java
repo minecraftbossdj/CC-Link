@@ -11,6 +11,7 @@ import dan200.computercraft.core.computer.ComputerSide;
 import dan200.computercraft.impl.PocketUpgrades;
 import dan200.computercraft.shared.ModRegistry.Menus;
 import dan200.computercraft.shared.common.IColouredItem;
+import dan200.computercraft.shared.computer.blocks.ComputerBlockEntity;
 import dan200.computercraft.shared.computer.core.ComputerFamily;
 import dan200.computercraft.shared.computer.core.ServerComputer;
 import dan200.computercraft.shared.computer.core.ServerComputerRegistry;
@@ -207,7 +208,6 @@ public class IntegratedLinkCoreComputerItem extends Item implements IComputerIte
         openImpl(player, stack, holder, isTypingOnly, computer);
     }
 
-    //the thing thats fucking over everything
     private static void openImpl(Player player, ItemStack stack, IntegratedLinkHolder holder, boolean isTypingOnly, ServerComputer computer) {
         PlatformHelper.get().openMenu(player, stack.getHoverName(), (id, inventory, entity) -> new ComputerMenuWithoutInventory(isTypingOnly ? (MenuType)Menus.POCKET_COMPUTER_NO_TERM.get() : (MenuType)Menus.COMPUTER.get(), id, inventory, (p) -> holder.isValid(computer), computer), new ComputerContainerData(computer, stack));
     }
@@ -259,7 +259,7 @@ public class IntegratedLinkCoreComputerItem extends Item implements IComputerIte
             IntegratedLinkServerComputer computerSigma = brain.computer();
             CompoundTag tag = stack.getOrCreateTag();
             tag.putInt("SessionId", registry.getSessionID());
-            tag.putUUID("InstanceId", computerSigma.register());
+            tag.putUUID("InstanceId", computerSigma.register()); //wait i named it that? tf i dont remember doing that :sob:
             if (isMarkedOn(stack)) {
                 computerSigma.turnOn();
             }
@@ -270,8 +270,10 @@ public class IntegratedLinkCoreComputerItem extends Item implements IComputerIte
         }
     }
 
+
     public static boolean isServerComputer(ServerComputer computer, ItemStack stack) {
         return stack.getItem() instanceof IntegratedLinkCoreComputerItem && getServerComputer(computer.getLevel().getServer(), stack) == computer;
+
     }
 
     @Nullable

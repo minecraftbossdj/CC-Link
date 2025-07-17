@@ -23,6 +23,8 @@ public class TabInit {
                         output.accept(ItemRegistry.INTEGRATED_LINK_CORE.get());
                         output.accept(ItemRegistry.LINK_CORE_COMMAND.get());
                         output.accept(ItemRegistry.LINK_INTERFACE.get());
+                        output.accept(ItemRegistry.LINK_TURTLE_ADVANCED.get());
+                        output.accept(ItemRegistry.LINK_KEY.get());
                     })
                     .build()
     );

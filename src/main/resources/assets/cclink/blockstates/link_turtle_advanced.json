@@ -1,0 +1,12 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "minecraft:block/cube_all"
+  },
+  "variants": {
+    "normal": [
+      {}
+    ]
+  },
+  "render_type": "entityblock_animated"
+}

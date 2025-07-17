@@ -1,0 +1,12 @@
+{
+  "type": "cclink:link_upgrade",
+  "ingredients": [
+    { "item": "cclink:integrated_link_core" },
+    { "item": "computercraft:wireless_modem_normal" }
+  ],
+  "result": {
+    "item": "cclink:integrated_link_core",
+    "count": 1,
+    "upgrade": "computercraft:wireless_modem_normal"
+  }
+}

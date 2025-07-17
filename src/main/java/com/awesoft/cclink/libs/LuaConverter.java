@@ -90,7 +90,7 @@ public class LuaConverter {
     public static Map<String, Object> stackToObjectWithSlot(@NotNull ItemStack stack, int slot) {
         if (stack.isEmpty()) return new HashMap<>();
         Map<String, Object> map = stackToObject(stack);
-        map.put("slot", slot);
+        map.put("slot", slot+1);
         return map;
     }
 

@@ -1,0 +1,58 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_nbt",
+              "ops": [
+                {
+                  "op": "replace",
+                  "source": "ComputerId",
+                  "target": "ComputerId"
+                },
+                {
+                  "op": "replace",
+                  "source": "Label",
+                  "target": "Label"
+                },
+                {
+                  "op": "replace",
+                  "source": "LeftUpgrade",
+                  "target": "LeftUpgrade"
+                },
+                {
+                  "op": "replace",
+                  "source": "RightUpgrade",
+                  "target": "RightUpgrade"
+                },
+                {
+                  "op": "replace",
+                  "source": "LeftUpgradeNbt",
+                  "target": "LeftUpgradeNbt"
+                },
+                {
+                  "op": "replace",
+                  "source": "RightUpgradeNbt",
+                  "target": "RightUpgradeNbt"
+                }
+              ],
+              "source": "block_entity"
+            },
+            {
+              "function": "minecraft:copy_name",
+              "source": "block_entity"
+            }
+          ],
+          "name": "cclink:link_turtle_advanced"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "cclink:blocks/link_turtle_advanced"
+}

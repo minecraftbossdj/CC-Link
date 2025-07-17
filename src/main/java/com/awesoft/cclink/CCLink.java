@@ -1,9 +1,13 @@
 package com.awesoft.cclink;
 
 import com.awesoft.cclink.Registration.APIRegistry;
+import com.awesoft.cclink.Registration.BlockRegistry;
 import com.awesoft.cclink.Registration.ItemRegistry;
 import com.awesoft.cclink.Registration.TabInit;
+import com.awesoft.cclink.client.LinkTurtleRenderer;
+import com.awesoft.cclink.datagen.recipes.ModRecipes;
 import com.awesoft.cclink.networking.OverlayNetworkHandler;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -31,24 +35,29 @@ public class CCLink {
     public CCLink() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         LOGGER.info("CC Link says helor! :3");
-        //Registration.register();
         TabInit.CREATIVE_MODE_TABS.register(bus);
         ItemRegistry.register(bus);
+        BlockRegistry.register(bus);
         LOGGER.info("registry says haiiiii!!!! :3");
         OverlayNetworkHandler.registerOverlayPackets();
         LOGGER.info("packets say \"whats up fella\" (hes a lil weird)");
         APIRegistry.register();
-        //EventRegister.Register();
+        ModRecipes.register(bus);
+        LOGGER.info("RAHHHHH MOD RECIPES JUMPSCARE! did i scare you? i hope i did, mod recipes quite scary fr");
         CCLinkConfig.register(ModLoadingContext.get());
         LOGGER.info("heloer!! -from config! :3");
-        // Register ourselves for server and other game events we are interested in. Currently, we do not use any events
+
         MinecraftForge.EVENT_BUS.register(this);
 
         bus.addListener(this::onClientSetup);
 
+
     }
 
     private void onClientSetup(final FMLClientSetupEvent event) {
-
+        BlockEntityRenderers.register(
+            BlockRegistry.LINK_TURTLE_ADVANCED_ENTITY.get(),
+            LinkTurtleRenderer::new
+        );
     }
 }

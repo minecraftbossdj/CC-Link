@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
+  "type": "cclink:integrated_link_computer_copy",
   "pattern": [
     "NMN",
     "TLT",

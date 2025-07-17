@@ -5,6 +5,9 @@
   "item.cclink.link_core_command": "Link Core (Command)",
   "item.cclink.link_interface": "Link Interface",
   "item.cclink.link_core.upgraded": "Link Core Enhanced",
-  "item.cclink.integrated_link_core.upgraded": "Link Core Enhanced",
-  "item.cclink.link_core_command.upgraded": "Link Core Enhanced (Command)"
+  "item.cclink.integrated_link_core.upgraded": "Integrated Link Core Enhanced",
+  "item.cclink.link_core_command.upgraded": "Link Core Enhanced (Command)",
+  "block.cclink.link_turtle_advanced": "Link Turtle",
+  "block.cclink.link_turtle_advanced.upgraded": "Link Turtle Enhanced",
+  "item.cclink.link_key": "Link Key"
 }

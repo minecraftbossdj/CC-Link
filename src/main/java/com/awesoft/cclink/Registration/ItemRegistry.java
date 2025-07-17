@@ -5,8 +5,11 @@ import com.awesoft.cclink.CCLinkArmorMaterials;
 import com.awesoft.cclink.item.LinkCore.Integrated.IntegratedLinkCoreComputerItem;
 import com.awesoft.cclink.item.LinkCore.LinkCoreComputerItem;
 import com.awesoft.cclink.item.LinkInterfaceHelmet;
+import com.awesoft.cclink.item.LinkKeyItem;
 import dan200.computercraft.shared.computer.core.ComputerFamily;
+import dan200.computercraft.shared.turtle.items.TurtleItem;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -30,6 +33,10 @@ public class ItemRegistry {
 
     public static final RegistryObject<Item> LINK_INTERFACE = ITEMS.register("link_interface",
             () -> new LinkInterfaceHelmet(new Item.Properties().stacksTo(1), CCLinkArmorMaterials.LINK_INTERFACE));
+
+    public static final RegistryObject<BlockItem> LINK_TURTLE_ADVANCED = ITEMS.register("link_turtle_advanced",()-> new TurtleItem(BlockRegistry.LINK_TURTLE_ADVANCED.get(),new Item.Properties()));
+
+    public static final RegistryObject<Item> LINK_KEY = ITEMS.register("link_key",()-> new LinkKeyItem(new Item.Properties()));
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

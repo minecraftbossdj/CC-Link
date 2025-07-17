@@ -22,6 +22,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.slf4j.Logger;
@@ -249,40 +251,39 @@ public class IntegratedLinkAPI implements ILuaAPI {
     }
 
     @LuaFunction(mainThread = true)
-    public Map<String, Object> raycastBlk(double reach) {
+    public Map<String, Object> raycastBlock(double inputReach, boolean hitFluids) {
+
+        double reach = Math.min(10,Math.max(1,inputReach));
+
         ClipContext.Fluid pFluidMode = ClipContext.Fluid.ANY;
         Player plr = getPlayer();
         Map<String, Object> info = new HashMap<>();
         if (plr != null) {
             Level lvl = plr.level();
-            float f = plr.getXRot();
-            float f1 = plr.getYRot();
-            Vec3 vec3 = plr.getEyePosition();
-            float f2 = Mth.cos(-f1 * ((float) Math.PI / 180F) - (float) Math.PI);
-            float f3 = Mth.sin(-f1 * ((float) Math.PI / 180F) - (float) Math.PI);
-            float f4 = -Mth.cos(-f * ((float) Math.PI / 180F));
-            float f5 = Mth.sin(-f * ((float) Math.PI / 180F));
-            float f6 = f3 * f4;
-            float f7 = f2 * f4;
-            Vec3 vec31 = vec3.add((double) f6 * reach, (double) f5 * reach, (double) f7 * reach);
-            BlockPos pos = lvl.clip(new ClipContext(vec3, vec31, ClipContext.Block.OUTLINE, pFluidMode, plr)).getBlockPos();
-            Minecraft mc = Minecraft.getInstance();
+            HitResult hitResult = plr.pick(5.0D, 0.0F, hitFluids);
+            if (hitResult.getType() == HitResult.Type.BLOCK) {
+                BlockHitResult blockHit = (BlockHitResult) hitResult;
+                BlockPos pos = blockHit.getBlockPos();
 
-            String name = String.valueOf(lvl.getBlockState(pos).getBlock().getName().toString());
-            Block blk = lvl.getBlockState(pos).getBlock();
+                String name = String.valueOf(lvl.getBlockState(pos).getBlock().getName().toString());
+                Block blk = lvl.getBlockState(pos).getBlock();
 
-            info.put("id", ForgeRegistries.BLOCKS.getKey(blk).toString());
-            info.put("name", new ItemStack(blk).getDisplayName().getString());
-            info.put("x", pos.getX());
-            info.put("y", pos.getY());
-            info.put("z", pos.getZ());
+                info.put("id", ForgeRegistries.BLOCKS.getKey(blk).toString());
+                info.put("name", new ItemStack(blk).getDisplayName().getString());
+                info.put("x", pos.getX());
+                info.put("y", pos.getY());
+                info.put("z", pos.getZ());
+            }
         }
         return info;
     }
 
     @Nullable
     @LuaFunction(mainThread = true)
-    public Map<String, Object> raycastEntity(double reach) {
+    public Map<String, Object> raycastEntity(double inputReach) {
+
+        double reach = Math.min(10,Math.max(1,inputReach));
+
         Map<String, Object> info = new HashMap<>();
         Player plr = getPlayer();
         if (plr != null) {
@@ -335,6 +336,7 @@ public class IntegratedLinkAPI implements ILuaAPI {
 
     @LuaFunction(mainThread = true)
     public MethodResult consume(int slot){
+        slot = slot - 1;
         Player plr = getPlayer();
         if (plr != null) {
             Inventory inv = plr.getInventory();
@@ -381,9 +383,7 @@ public class IntegratedLinkAPI implements ILuaAPI {
         var size = inventory.getContainerSize();
         for (var i = 0; i < size; i++) {
             var stack = inventory.getItem(i);
-            if (!stack.isEmpty()) {
-                items.add(LuaConverter.stackToObjectWithSlot(stack, i));
-            }
+            items.add(LuaConverter.stackToObjectWithSlot(stack, i));
         }
         return MethodResult.of(items);
     }
@@ -391,11 +391,14 @@ public class IntegratedLinkAPI implements ILuaAPI {
 
     @LuaFunction(mainThread = true)
     public Map<String, Object> getSlot(int slot) throws LuaException {
-        return LuaConverter.stackToObject(getPlayer().getInventory().getItem(slot));
+        slot = slot - 1;
+        return LuaConverter.stackToObject(getPlayer().getInventory().getItem(slot+1));
     }
 
     @LuaFunction(mainThread = true)
     public boolean moveItem(int fromSlot, int count, int toSlot) throws LuaException {
+        fromSlot = fromSlot - 1;
+        toSlot = toSlot - 1;
         if (count > 0) {
             Inventory inv = getPlayer().getInventory();
 
