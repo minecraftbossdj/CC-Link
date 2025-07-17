@@ -1,8 +1,6 @@
 package com.awesoft.cclink.hudoverlay;
 
-import com.awesoft.cclink.hudoverlay.packets.HUDItemPacket;
-import com.awesoft.cclink.hudoverlay.packets.HUDRectanglePacket;
-import com.awesoft.cclink.hudoverlay.packets.HUDTextPacket;
+
 import com.awesoft.cclink.libs.ColorUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -22,6 +20,8 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+
 @Mod.EventBusSubscriber(modid = "cclink", bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class HUDOverlay {
     private static final Map<UUID, Map<String, RectangleElement>> playerRectangleElements = new HashMap<>();
@@ -213,51 +213,6 @@ public class HUDOverlay {
     // Method to clear all text elements for a specific player
     public static void clearTextElementsForPlayer(UUID playerUUID) {
         playerTextElements.remove(playerUUID);
-    }
-
-
-    // Method to handle a HUDTextPacket
-    public static void handleTextPacket(HUDTextPacket packet) {
-        addOrUpdateTextElement(packet.getPlayerUUID(), packet.getElementID(), packet.getText(), packet.getX(), packet.getY(), packet.getColor(), packet.getScale());
-    }
-
-    // Method to handle a HUDItemPacket
-    public static void handleItemPacket(HUDItemPacket packet) {
-        addOrUpdateItemElement(packet.getPlayerUUID(), packet.getElementID(), packet.getItemResource(), packet.getX(), packet.getY());
-    }
-
-    // Method to handle a HUDRectanglePacket
-    public static void handleRectanglePacket(HUDRectanglePacket packet) {
-        addOrUpdateRectangleElement(packet.getPlayerUUID(), packet.getElementID(), packet.getX1(), packet.getY1(), packet.getX2(), packet.getY2(), packet.getColor(), packet.getTransparency());
-    }
-//remove
-    public static void handleRemoveTextPacket(HUDTextPacket packet) {
-        removeTextElement(packet.getPlayerUUID(), packet.getElementID());
-    }
-
-    // Method to handle a HUDItemPacket
-    public static void handleRemoveItemPacket(HUDItemPacket packet) {
-        removeItemElement(packet.getPlayerUUID(), packet.getElementID());
-    }
-
-    // Method to handle a HUDRectanglePacket
-    public static void handleRemoveRectanglePacket(HUDRectanglePacket packet) {
-        removeRectangleElement(packet.getPlayerUUID(), packet.getElementID());
-    }
-    //remove all
-
-    public static void handleRemoveAllTextPacket(HUDTextPacket packet) {
-        clearTextElementsForPlayer(packet.getPlayerUUID());
-    }
-
-    // Method to handle a HUDItemPacket
-    public static void handleRemoveAllItemPacket(HUDItemPacket packet) {
-        clearItemElementsForPlayer(packet.getPlayerUUID());
-    }
-
-    // Method to handle a HUDRectanglePacket
-    public static void handleRemoveAllRectanglePacket(HUDRectanglePacket packet) {
-        clearRectangleElementsForPlayer(packet.getPlayerUUID());
     }
 
 }

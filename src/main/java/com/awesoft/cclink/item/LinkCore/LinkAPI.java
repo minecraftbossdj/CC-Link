@@ -1,6 +1,7 @@
 package com.awesoft.cclink.item.LinkCore;
 
 import com.awesoft.cclink.CCLink;
+import com.awesoft.cclink.hudoverlay.packets.HUDOverlayUpdatePacket;
 import com.awesoft.cclink.hudoverlay.packets.PacketManager;
 import com.awesoft.cclink.libs.LuaConverter;
 import com.awesoft.cclink.libs.PacketCooldownManager;
@@ -36,6 +37,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import dan200.computercraft.api.lua.*;
 import dan200.computercraft.api.pocket.IPocketAccess;
+import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,127 +99,218 @@ public class LinkAPI implements ILuaAPI {
     public final Map<String, Object> getOverlay() {
         Map<String, Object> info = new HashMap<>();
 
+        List<HUDOverlayUpdatePacket.Entry> entries = new ArrayList<>();
+
+        ILuaFunction send = args -> {
+            if (PacketCooldownManager.canSendPacket(getOwnerUUID())) {
+                HUDOverlayUpdatePacket packet = new HUDOverlayUpdatePacket(Objects.requireNonNull(getPlayer()).getUUID(), entries);
+
+                PacketManager.sendToClient(getPlayer().getUUID(), packet);
+
+                return MethodResult.of(true);
+            } else {
+                return MethodResult.of(false,"On cooldown!");
+            }
+        };
+        info.put("send",send);
+
         // oh my god its fucking text :WHAT:
         ILuaFunction addOrUpdateTextElement = args -> {
-            if (PacketCooldownManager.canSendPacket(getOwnerUUID())) {
-                return OverlayMethods.addOrUpdateTextElement(args, isPlayerAlive(), getOwnerUUID());
-            } else {
-                return MethodResult.of(new HashMap<>(), "Still in cooldown!");
-            }
+            entries.add(HUDOverlayUpdatePacket.Entry.text(
+                    args.getString(0),
+                    args.getString(1),
+                    args.getInt(2),
+                    args.getInt(3),
+                    args.getInt(4),
+                    (float)args.getDouble(5),
+                    false,
+                    false,
+                    false
+            ));
+            return MethodResult.of(true);
         };
         info.put("addOrUpdateTextElement",addOrUpdateTextElement);
 
         ILuaFunction removeTextElement = args -> {
-            if (PacketCooldownManager.canSendPacket(getOwnerUUID())) {
-                return OverlayMethods.removeTextElement(args,isPlayerAlive(),getOwnerUUID());
-            } else {
-                return MethodResult.of(new HashMap<>(), "Still in cooldown!");
-            }
+            entries.add(HUDOverlayUpdatePacket.Entry.text(
+                    args.getString(0),
+                    "",
+                    0,0,0,
+                    0.0f,
+                    false,
+                    true,
+                    false
+            ));
+            return MethodResult.of(true);
         };
         info.put("removeTextElement",removeTextElement);
 
+        ILuaFunction clearText = args -> {
+            entries.add(HUDOverlayUpdatePacket.Entry.text(
+                    "",
+                    "",
+                    0,0,0,
+                    0.0f,
+                    false,
+                    false,
+                    true
+            ));
+            return MethodResult.of(true);
+        };
+        info.put("clearText",clearText);
+
+
         //rightbound string :wilted_rose:
         ILuaFunction addOrUpdateRightboundTextElement = args -> {
-            if (PacketCooldownManager.canSendPacket(getOwnerUUID())) {
-                return OverlayMethods.addOrUpdateRightboundTextElement(args,isPlayerAlive(),getOwnerUUID());
-            } else {
-                return MethodResult.of(new HashMap<>(), "Still in cooldown!");
-            }
+            entries.add(HUDOverlayUpdatePacket.Entry.text(
+                    args.getString(0),
+                    args.getString(1),
+                    args.getInt(2),
+                    args.getInt(3),
+                    args.getInt(4),
+                    (float)args.getDouble(5),
+                    true,
+                    false,
+                    false
+            ));
+            return MethodResult.of(true);
         };
         info.put("addOrUpdateRightboundTextElement",addOrUpdateRightboundTextElement);
 
         ILuaFunction removeRightboundTextElement = args -> {
-            if (PacketCooldownManager.canSendPacket(getOwnerUUID())) {
-                return OverlayMethods.removeRightboundTextElement(args,isPlayerAlive(),getOwnerUUID());
-            } else {
-                return MethodResult.of(new HashMap<>(), "Still in cooldown!");
-            }
+            entries.add(HUDOverlayUpdatePacket.Entry.text(
+                    args.getString(0),
+                    "",
+                    0,0,0,
+                    0.0f,
+                    true,
+                    true,
+                    false
+            ));
+            return MethodResult.of(true);
         };
         info.put("removeRightboundTextElement",removeRightboundTextElement);
 
+        ILuaFunction clearRightboundText = args -> {
+            entries.add(HUDOverlayUpdatePacket.Entry.text(
+                    "",
+                    "",
+                    0,0,0,
+                    0.0f,
+                    true,
+                    false,
+                    true
+            ));
+            return MethodResult.of(true);
+        };
+        info.put("clearRightboundText",clearRightboundText);
+
+
         //box elementer
         ILuaFunction addOrUpdateRectElement = args -> {
-            if (PacketCooldownManager.canSendPacket(getOwnerUUID())) {
-                return OverlayMethods.addOrUpdateRectElement(args,isPlayerAlive(),getOwnerUUID());
-            } else {
-                return MethodResult.of(new HashMap<>(), "Still in cooldown!");
-            }
+            entries.add(HUDOverlayUpdatePacket.Entry.rect(
+                    args.getString(0),
+                    args.getInt(1),
+                    args.getInt(2),
+                    args.getInt(3),
+                    args.getInt(4),
+                    args.getInt(5),
+                    args.getInt(6),
+                    false,
+                    false
+            ));
+            return MethodResult.of(true);
         };
         info.put("addOrUpdateRectElement",addOrUpdateRectElement);
 
         ILuaFunction removeRectElement = args -> {
-            if (PacketCooldownManager.canSendPacket(getOwnerUUID())) {
-                return OverlayMethods.removeRectElement(args,isPlayerAlive(),getOwnerUUID());
-            } else {
-                return MethodResult.of(new HashMap<>(), "Still in cooldown!");
-            }
+            entries.add(HUDOverlayUpdatePacket.Entry.rect(
+                    args.getString(0),
+                    0,0,0,0,0,0,
+                    true,
+                    false
+            ));
+            return MethodResult.of(true);
         };
         info.put("removeRectElement",removeRectElement);
 
-        //item element
+        ILuaFunction clearRect = args -> {
+            entries.add(HUDOverlayUpdatePacket.Entry.rect(
+                    "",
+                    0,0,0,0,0,0,
+                    false,
+                    true
+            ));
+            return MethodResult.of(true);
+        };
+        info.put("clearRect",clearRect);
+
+
         ILuaFunction addOrUpdateItemElement = args -> {
-            if (PacketCooldownManager.canSendPacket(getOwnerUUID())) {
-                return OverlayMethods.addOrUpdateItemElement(args,isPlayerAlive(),getOwnerUUID());
-            } else {
-                return MethodResult.of(new HashMap<>(), "Still in cooldown!");
-            }
+            entries.add(HUDOverlayUpdatePacket.Entry.item(
+                args.getString(0),
+                    args.getString(1),
+                    args.getInt(2),
+                    args.getInt(3),
+                    false,
+                    false
+            ));
+            return MethodResult.of(true);
         };
         info.put("addOrUpdateItemElement",addOrUpdateItemElement);
 
         ILuaFunction removeItemElement = args -> {
-            if (PacketCooldownManager.canSendPacket(getOwnerUUID())) {
-                return OverlayMethods.removeItemElement(args,isPlayerAlive(),getOwnerUUID());
-            } else {
-                return MethodResult.of(new HashMap<>(), "Still in cooldown!");
-            }
+            entries.add(HUDOverlayUpdatePacket.Entry.item(
+                    args.getString(0),
+                   "",0,0,
+                    true,
+                    false
+            ));
+            return MethodResult.of(true);
         };
         info.put("removeItemElement",removeItemElement);
 
-
-        //deletion all situation is CRAZY
-
-        ILuaFunction clearText = args -> {
-            if (PacketCooldownManager.canSendPacket(getOwnerUUID())) {
-                return OverlayMethods.clearText(args,isPlayerAlive(),getOwnerUUID());
-            } else {
-                return MethodResult.of(new HashMap<>(), "Still in cooldown!");
-            }
+        ILuaFunction clearItem = args -> {
+            entries.add(HUDOverlayUpdatePacket.Entry.item(
+                    "","",0,0,
+                    false,
+                    true
+            ));
+            return MethodResult.of(true);
         };
-        info.put("clearText",clearText);
-
-        ILuaFunction clearRightboundText = args -> {
-            if (PacketCooldownManager.canSendPacket(getOwnerUUID())) {
-                return OverlayMethods.clearRightboundText(args,isPlayerAlive(),getOwnerUUID());
-            } else {
-                return MethodResult.of(new HashMap<>(), "Still in cooldown!");
-            }
-        };
-        info.put("clearRightboundText",clearRightboundText);
-
-        ILuaFunction clearRectangles = args -> {
-            if (PacketCooldownManager.canSendPacket(getOwnerUUID())) {
-                return OverlayMethods.clearRect(args,isPlayerAlive(),getOwnerUUID());
-            } else {
-                return MethodResult.of(new HashMap<>(), "Still in cooldown!");
-            }
-        };
-        info.put("clearRectangles",clearRectangles);
-
-        ILuaFunction clearItems = args -> {
-            if (PacketCooldownManager.canSendPacket(getOwnerUUID())) {
-                return OverlayMethods.clearItem(args,isPlayerAlive(),getOwnerUUID());
-            } else {
-                return MethodResult.of(new HashMap<>(), "Still in cooldown!");
-            }
-        };
-        info.put("clearItems",clearItems);
+        info.put("clearItem",clearItem);
 
         ILuaFunction clearAll = args -> {
-            if (PacketCooldownManager.canSendPacket(getOwnerUUID())) {
-                return OverlayMethods.clearAll(args,isPlayerAlive(),getOwnerUUID());
-            } else {
-                return MethodResult.of(new HashMap<>(), "Still in cooldown!");
-            }
+            entries.add(HUDOverlayUpdatePacket.Entry.text(
+                    "",
+                    "",
+                    0,0,0,
+                    0.0f,
+                    false,
+                    false,
+                    true
+            )); //text
+            entries.add(HUDOverlayUpdatePacket.Entry.text(
+                    "",
+                    "",
+                    0,0,0,
+                    0.0f,
+                    true,
+                    false,
+                    true
+            )); //rightbound text
+            entries.add(HUDOverlayUpdatePacket.Entry.rect(
+                    "",
+                    0,0,0,0,0,0,
+                    false,
+                    true
+            )); //rect
+            entries.add(HUDOverlayUpdatePacket.Entry.item(
+                    "","",0,0,
+                    false,
+                    true
+            )); //item
+            return MethodResult.of(true);
         };
         info.put("clearAll",clearAll);
 
