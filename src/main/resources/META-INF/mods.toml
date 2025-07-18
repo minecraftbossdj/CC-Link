@@ -5,7 +5,7 @@ license = "All rights reserved"
 [[mods]] #mandatory
 # The modid of the mod
 modId = "cclink" #mandatory
-version = "4.1.0-build1" #mandatory
+version = "4.1.1-build1" #mandatory
 # A display name for the mod
 displayName = "CCLink" #mandatory
 # The description text for the mod (multi line!) (#mandatory)

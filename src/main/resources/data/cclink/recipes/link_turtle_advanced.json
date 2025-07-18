@@ -1,5 +1,5 @@
 {
-  "type": "cclink:link_turtle_id_copy",
+  "type": "minecraft:crafting_shaped",
   "pattern": [
     "DMD",
     "GTE",
