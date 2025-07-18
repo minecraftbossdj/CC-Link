@@ -39,6 +39,7 @@ public class LinkTurtleBlockEntity extends TurtleBlockEntity {
 
     @Override
     public ServerComputer createComputer(int id) {
+
         try {
             Field brainField = TurtleBlockEntity.class.getDeclaredField("brain");
             brainField.setAccessible(true);
@@ -53,9 +54,8 @@ public class LinkTurtleBlockEntity extends TurtleBlockEntity {
 
             return computer;
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e);
         } //i hate this, but this lowkey works, wtf :sob:
-
         return super.createComputer(id);
     }
 

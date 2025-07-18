@@ -87,11 +87,14 @@ public class IntegratedLinkAPI implements ILuaAPI {
 
         ILuaFunction send = args -> {
             if (PacketCooldownManager.canSendPacket(getOwnerUUID())) {
-                HUDOverlayUpdatePacket packet = new HUDOverlayUpdatePacket(Objects.requireNonNull(getPlayer()).getUUID(), entries);
+                if (getPlayer() != null) {
+                    HUDOverlayUpdatePacket packet = new HUDOverlayUpdatePacket(Objects.requireNonNull(getPlayer()).getUUID(), entries);
 
-                PacketManager.sendToClient(getPlayer().getUUID(), packet);
+                    PacketManager.sendToClient(getPlayer().getUUID(), packet);
 
-                return MethodResult.of(true);
+                    return MethodResult.of(true);
+                }
+                return MethodResult.of(false);
             } else {
                 return MethodResult.of(false,"On cooldown!");
             }
@@ -451,11 +454,11 @@ public class IntegratedLinkAPI implements ILuaAPI {
     }
 
     @LuaFunction(mainThread = true)
-    public MethodResult lookAt(float x, float y){
+    public MethodResult lookAt(double x, double y) {
         Player plr = getPlayer();
         if (plr != null) {
-            plr.setXRot(x);
-            plr.setYHeadRot(y);
+            plr.setXRot((float)x);
+            plr.setYHeadRot((float)y);
             return MethodResult.of(true);
         }
         else {return MethodResult.of(false,"player forgor");}

@@ -10,9 +10,11 @@ import com.awesoft.cclink.networking.OverlayNetworkHandler;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,12 +36,15 @@ public class CCLink {
 
     public CCLink() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        bus.addListener(this::onCommonSetup);
+        bus.addListener(this::onClientSetup);
+
         LOGGER.info("CC Link says helor! :3");
         TabInit.CREATIVE_MODE_TABS.register(bus);
         ItemRegistry.register(bus);
         BlockRegistry.register(bus);
         LOGGER.info("registry says haiiiii!!!! :3");
-        OverlayNetworkHandler.registerOverlayPackets();
+        //OverlayNetworkHandler.registerOverlayPackets();
         LOGGER.info("packets say \"whats up fella\" (hes a lil weird)");
         APIRegistry.register();
         ModRecipes.register(bus);
@@ -49,9 +54,11 @@ public class CCLink {
 
         MinecraftForge.EVENT_BUS.register(this);
 
-        bus.addListener(this::onClientSetup);
 
+    }
 
+    public void onCommonSetup(FMLCommonSetupEvent evt) {
+        OverlayNetworkHandler.registerOverlayPackets();
     }
 
     private void onClientSetup(final FMLClientSetupEvent event) {

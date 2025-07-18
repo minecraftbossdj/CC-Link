@@ -26,7 +26,7 @@ public class HUDOverlayUpdatePacket {
 
         public ElementType elementType;
         public ActionType actionType;
-        public String elementID; // null for REMOVE_ALL
+        public String elementID;
         public String text;
         public String itemResource;
         public int x, y, x2, y2, color, transparency;
@@ -39,7 +39,7 @@ public class HUDOverlayUpdatePacket {
             entry.elementType = rightbound ? ElementType.RIGHTBOUND_TEXT : ElementType.TEXT;
             entry.actionType = removeAll ? ActionType.REMOVE_ALL : (remove ? ActionType.REMOVE : ActionType.ADD_OR_UPDATE);
             entry.elementID = removeAll ? null : id;
-            entry.text = text;
+            entry.text = text != null ? text : "";
             entry.x = x;
             entry.y = y;
             entry.color = color;
@@ -52,7 +52,7 @@ public class HUDOverlayUpdatePacket {
             entry.elementType = ElementType.ITEM;
             entry.actionType = removeAll ? ActionType.REMOVE_ALL : (remove ? ActionType.REMOVE : ActionType.ADD_OR_UPDATE);
             entry.elementID = removeAll ? null : id;
-            entry.itemResource = item;
+            entry.itemResource = item != null ? item : "";
             entry.x = x;
             entry.y = y;
             return entry;
@@ -81,19 +81,30 @@ public class HUDOverlayUpdatePacket {
         this.entries = entries;
     }
 
+    public static void safeWriteUtf(FriendlyByteBuf buf, String value, String label) {
+        if (value == null) {
+            throw new IllegalArgumentException("tried to write null to UTF for field: " + label);
+        }
+        buf.writeUtf(value);
+    }
+
     public static void encode(HUDOverlayUpdatePacket pkt, FriendlyByteBuf buf) {
         buf.writeUUID(pkt.playerUUID);
         buf.writeVarInt(pkt.entries.size());
         for (Entry e : pkt.entries) {
             buf.writeEnum(e.elementType);
             buf.writeEnum(e.actionType);
-            if (e.actionType != Entry.ActionType.REMOVE_ALL)
-                buf.writeUtf(e.elementID);
+
+            boolean hasId = e.actionType != Entry.ActionType.REMOVE_ALL;
+            buf.writeBoolean(hasId);
+            if (hasId) {
+                safeWriteUtf(buf,e.elementID != null ? e.elementID : "","elementId");
+            }
 
             switch (e.elementType) {
                 case TEXT, RIGHTBOUND_TEXT -> {
                     if (e.actionType == Entry.ActionType.ADD_OR_UPDATE) {
-                        buf.writeUtf(e.text);
+                        safeWriteUtf(buf,e.text,"text");
                         buf.writeInt(e.x);
                         buf.writeInt(e.y);
                         buf.writeInt(e.color);
@@ -102,7 +113,7 @@ public class HUDOverlayUpdatePacket {
                 }
                 case ITEM -> {
                     if (e.actionType == Entry.ActionType.ADD_OR_UPDATE) {
-                        buf.writeUtf(e.itemResource);
+                        safeWriteUtf(buf,e.itemResource,"itemResource");
                         buf.writeInt(e.x);
                         buf.writeInt(e.y);
                     }
@@ -129,12 +140,14 @@ public class HUDOverlayUpdatePacket {
         for (int i = 0; i < size; i++) {
             Entry.ElementType type = buf.readEnum(Entry.ElementType.class);
             Entry.ActionType action = buf.readEnum(Entry.ActionType.class);
-            String id = (action != Entry.ActionType.REMOVE_ALL) ? buf.readUtf() : null;
+
+            boolean hasId = buf.readBoolean();
+            String id = hasId ? buf.readUtf() : null;
 
             Entry e = new Entry();
             e.elementType = type;
             e.actionType = action;
-            e.elementID = id;
+            e.elementID = hasId ? id : null;
 
             switch (type) {
                 case TEXT, RIGHTBOUND_TEXT -> {

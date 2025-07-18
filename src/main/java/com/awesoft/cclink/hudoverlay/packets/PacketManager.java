@@ -10,10 +10,16 @@ import java.util.UUID;
 
 public class PacketManager {
 
-    public static void sendToClient(UUID playerUUID, Object packet) {
+    public static void sendToClient(UUID playerUUID, HUDOverlayUpdatePacket packet) {
+        if (!ServerLifecycleHooks.getCurrentServer().isDedicatedServer()) {return;}
         ServerPlayer player = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(playerUUID);
-        if (player != null) {
-            OverlayNetworkHandler.OVERLAY_CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
+
+        if (player == null) {
+            System.err.println("player actually is cooked");
+            return;
         }
+
+
+        OverlayNetworkHandler.OVERLAY_CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
     }
 }

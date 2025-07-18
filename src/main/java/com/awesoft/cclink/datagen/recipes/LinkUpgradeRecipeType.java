@@ -74,6 +74,7 @@ public class LinkUpgradeRecipeType extends ShapelessRecipe {
 
         @Override
         public LinkUpgradeRecipeType fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
+
             String group = buffer.readUtf();
             CraftingBookCategory category = buffer.readEnum(CraftingBookCategory.class);
 
@@ -84,7 +85,6 @@ public class LinkUpgradeRecipeType extends ShapelessRecipe {
             }
 
             ItemStack result = buffer.readItem();
-
             String upgradeId = buffer.readUtf();
 
             return new LinkUpgradeRecipeType(id, group, category, result, ingredients, upgradeId);
@@ -92,7 +92,7 @@ public class LinkUpgradeRecipeType extends ShapelessRecipe {
 
         @Override
         public void toNetwork(FriendlyByteBuf buffer, LinkUpgradeRecipeType recipe) {
-            buffer.writeResourceLocation(recipe.getId());
+            //buffer.writeResourceLocation(recipe.getId());
             buffer.writeUtf(recipe.getGroup());
             buffer.writeEnum(recipe.category());
 
