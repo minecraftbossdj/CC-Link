@@ -39,23 +39,23 @@ public class TurtleLinkAPI implements ILuaAPI {
     }
 
     @LuaFunction(mainThread = true)
-    public Map<String, Object> raycast(double reach) {
+    public final Map<String, Object> raycast(double reach) {
         return RaycastingUtil.raycast(reach,turtle,turtle.getDirection());
     }
 
     @LuaFunction(mainThread = true)
-    public Map<String, Object> raycastUp(double reach) {
+    public final Map<String, Object> raycastUp(double reach) {
         return RaycastingUtil.raycast(reach,turtle,Direction.UP);
     }
 
     @LuaFunction(mainThread = true)
-    public Map<String, Object> raycastDown(double reach) {
+    public final Map<String, Object> raycastDown(double reach) {
         return RaycastingUtil.raycast(reach,turtle,Direction.DOWN);
     }
 
 
     @LuaFunction(mainThread = true)
-    public MethodResult list() throws LuaException {
+    public final MethodResult list() throws LuaException {
         var inventory = turtle.getInventory();
         if (inventory == null) {
             throw new LuaException("Turtle isn't present");
@@ -70,7 +70,7 @@ public class TurtleLinkAPI implements ILuaAPI {
     }
 
     @LuaFunction(mainThread = true)
-    public MethodResult getDirection() {
+    public final MethodResult getDirection() {
         return MethodResult.of(turtle.getDirection().toString());
     }
 

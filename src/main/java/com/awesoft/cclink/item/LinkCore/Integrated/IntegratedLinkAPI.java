@@ -333,7 +333,7 @@ public class IntegratedLinkAPI implements ILuaAPI {
     }
 
     @LuaFunction(mainThread = true)
-    public MethodResult swingMainHand(){
+    public final MethodResult swingMainHand(){
         Player plr = getPlayer();
         if (plr != null) {
             plr.swing(InteractionHand.MAIN_HAND);
@@ -343,7 +343,7 @@ public class IntegratedLinkAPI implements ILuaAPI {
     }
 
     @LuaFunction(mainThread = true)
-    public Map<String, Object> raycastBlock(double inputReach, boolean hitFluids) {
+    public final Map<String, Object> raycastBlock(double inputReach, boolean hitFluids) {
 
         double reach = Math.min(10,Math.max(1,inputReach));
 
@@ -372,7 +372,7 @@ public class IntegratedLinkAPI implements ILuaAPI {
 
     @Nullable
     @LuaFunction(mainThread = true)
-    public Map<String, Object> raycastEntity(double inputReach) {
+    public final Map<String, Object> raycastEntity(double inputReach) {
 
         double reach = Math.min(10,Math.max(1,inputReach));
 
@@ -427,7 +427,7 @@ public class IntegratedLinkAPI implements ILuaAPI {
 
 
     @LuaFunction(mainThread = true)
-    public MethodResult consume(int slot){
+    public final MethodResult consume(int slot){
         slot = slot - 1;
         Player plr = getPlayer();
         if (plr != null) {
@@ -448,13 +448,13 @@ public class IntegratedLinkAPI implements ILuaAPI {
     }
 
     @LuaFunction(mainThread = true)
-    public MethodResult lookAtBlock(double x, double y, double z){
+    public final MethodResult lookAtBlock(double x, double y, double z){
         getPlayer().lookAt(EntityAnchorArgument.Anchor.EYES,new Vec3(x,y,z));
         return MethodResult.of(true);
     }
 
     @LuaFunction(mainThread = true)
-    public MethodResult lookAt(double x, double y) {
+    public final MethodResult lookAt(double x, double y) {
         Player plr = getPlayer();
         if (plr != null) {
             plr.setXRot((float)x);
@@ -466,7 +466,7 @@ public class IntegratedLinkAPI implements ILuaAPI {
 
 
     @LuaFunction(mainThread = true)
-    public MethodResult list() throws LuaException {
+    public final MethodResult list() throws LuaException {
         var inventory = getPlayer().getInventory();
         if (inventory == null) {
             throw new LuaException("Player isn't present");
@@ -482,13 +482,13 @@ public class IntegratedLinkAPI implements ILuaAPI {
 
 
     @LuaFunction(mainThread = true)
-    public Map<String, Object> getSlot(int slot) throws LuaException {
+    public final Map<String, Object> getSlot(int slot) throws LuaException {
         slot = slot - 1;
         return LuaConverter.stackToObject(getPlayer().getInventory().getItem(slot+1));
     }
 
     @LuaFunction(mainThread = true)
-    public boolean moveItem(int fromSlot, int count, int toSlot) throws LuaException {
+    public final boolean moveItem(int fromSlot, int count, int toSlot) throws LuaException {
         fromSlot = fromSlot - 1;
         toSlot = toSlot - 1;
         if (count > 0) {
