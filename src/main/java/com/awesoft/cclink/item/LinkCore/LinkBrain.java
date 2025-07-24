@@ -66,6 +66,9 @@ public final class LinkBrain implements IPocketAccess {
             if (oldHolder instanceof LinkHolder.PlayerHolder) {
                 LinkHolder.PlayerHolder p = (LinkHolder.PlayerHolder)oldHolder;
                 var10000 = p.entity();
+            } else if (oldHolder instanceof LinkHolder.PlayerCuriosHolder) {
+                LinkHolder.PlayerCuriosHolder p = (LinkHolder.PlayerCuriosHolder)oldHolder;
+                var10000 = p.entity();
             } else {
                 var10000 = null;
             }
@@ -108,6 +111,13 @@ public final class LinkBrain implements IPocketAccess {
         LinkHolder var2 = this.holder;
         Entity var10000;
         if (var2 instanceof LinkHolder.EntityHolder entity) {
+            if (this.holder.isValid(this.computer)) {
+                var10000 = entity.entity();
+                return var10000;
+            }
+        }
+
+        if (var2 instanceof LinkHolder.PlayerCuriosHolder entity) {
             if (this.holder.isValid(this.computer)) {
                 var10000 = entity.entity();
                 return var10000;

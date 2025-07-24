@@ -186,45 +186,49 @@ public class HUDOverlayUpdatePacket {
 
     public static void handle(HUDOverlayUpdatePacket pkt, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            UUID uuid = pkt.playerUUID;
-            for (Entry e : pkt.entries) {
-                switch (e.elementType) {
-                    case TEXT -> {
-                        switch (e.actionType) {
-                            case ADD_OR_UPDATE ->
-                                    HUDOverlay.addOrUpdateTextElement(uuid, e.elementID, e.text, e.x, e.y, e.color, e.scale);
-                            case REMOVE -> HUDOverlay.removeTextElement(uuid, e.elementID);
-                            case REMOVE_ALL -> HUDOverlay.clearTextElementsForPlayer(uuid);
-                        }
+            processPacket(pkt);
+        });
+        ctx.get().setPacketHandled(true);
+    }
+
+    public static void processPacket(HUDOverlayUpdatePacket pkt) {
+        UUID uuid = pkt.playerUUID;
+        for (Entry e : pkt.entries) {
+            switch (e.elementType) {
+                case TEXT -> {
+                    switch (e.actionType) {
+                        case ADD_OR_UPDATE ->
+                                HUDOverlay.addOrUpdateTextElement(uuid, e.elementID, e.text, e.x, e.y, e.color, e.scale);
+                        case REMOVE -> HUDOverlay.removeTextElement(uuid, e.elementID);
+                        case REMOVE_ALL -> HUDOverlay.clearTextElementsForPlayer(uuid);
                     }
-                    case RIGHTBOUND_TEXT -> {
-                        switch (e.actionType) {
-                            case ADD_OR_UPDATE ->
-                                    HUDOverlay.addOrUpdateRightboundTextElement(uuid, e.elementID, e.text, e.x, e.y, e.color, e.scale);
-                            case REMOVE -> HUDOverlay.removeRightboundTextElement(uuid, e.elementID);
-                            case REMOVE_ALL -> HUDOverlay.clearRightboundTextElementsForPlayer(uuid);
-                        }
+                }
+                case RIGHTBOUND_TEXT -> {
+                    switch (e.actionType) {
+                        case ADD_OR_UPDATE ->
+                                HUDOverlay.addOrUpdateRightboundTextElement(uuid, e.elementID, e.text, e.x, e.y, e.color, e.scale);
+                        case REMOVE -> HUDOverlay.removeRightboundTextElement(uuid, e.elementID);
+                        case REMOVE_ALL -> HUDOverlay.clearRightboundTextElementsForPlayer(uuid);
                     }
-                    case ITEM -> {
-                        switch (e.actionType) {
-                            case ADD_OR_UPDATE ->
-                                    HUDOverlay.addOrUpdateItemElement(uuid, e.elementID, e.itemResource, e.x, e.y);
-                            case REMOVE -> HUDOverlay.removeItemElement(uuid, e.elementID);
-                            case REMOVE_ALL -> HUDOverlay.clearItemElementsForPlayer(uuid);
-                        }
+                }
+                case ITEM -> {
+                    switch (e.actionType) {
+                        case ADD_OR_UPDATE ->
+                                HUDOverlay.addOrUpdateItemElement(uuid, e.elementID, e.itemResource, e.x, e.y);
+                        case REMOVE -> HUDOverlay.removeItemElement(uuid, e.elementID);
+                        case REMOVE_ALL -> HUDOverlay.clearItemElementsForPlayer(uuid);
                     }
-                    case RECTANGLE -> {
-                        switch (e.actionType) {
-                            case ADD_OR_UPDATE ->
-                                    HUDOverlay.addOrUpdateRectangleElement(uuid, e.elementID, e.x, e.y, e.x2, e.y2, e.color, e.transparency);
-                            case REMOVE -> HUDOverlay.removeRectangleElement(uuid, e.elementID);
-                            case REMOVE_ALL -> HUDOverlay.clearRectangleElementsForPlayer(uuid);
-                        }
+                }
+                case RECTANGLE -> {
+                    switch (e.actionType) {
+                        case ADD_OR_UPDATE ->
+                                HUDOverlay.addOrUpdateRectangleElement(uuid, e.elementID, e.x, e.y, e.x2, e.y2, e.color, e.transparency);
+                        case REMOVE -> HUDOverlay.removeRectangleElement(uuid, e.elementID);
+                        case REMOVE_ALL -> HUDOverlay.clearRectangleElementsForPlayer(uuid);
                     }
                 }
             }
-        });
-        ctx.get().setPacketHandled(true);
+        }
     }
 
 }

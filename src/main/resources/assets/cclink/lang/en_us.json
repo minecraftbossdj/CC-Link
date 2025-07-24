@@ -10,5 +10,7 @@
   "block.cclink.link_turtle_advanced": "Link Turtle",
   "block.cclink.link_turtle_advanced.upgraded": "Link Turtle Enhanced",
   "block.cclink.link_turtle_advanced.upgraded_twice": "Link Turtle Enhanced",
-  "item.cclink.link_key": "Link Key"
+  "item.cclink.link_key": "Link Key",
+  "key.cclink.open_link": "Open Link Terminal",
+  "key.categories.cclink": "CCLink: General"
 }

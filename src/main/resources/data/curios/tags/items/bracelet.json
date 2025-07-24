@@ -1,0 +1,7 @@
+{
+  "values": [
+    "cclink:link_core",
+    "cclink:link_core_command",
+    "cclink:integrated_link_core"
+  ]
+}

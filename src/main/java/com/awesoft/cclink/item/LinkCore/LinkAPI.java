@@ -39,6 +39,7 @@ import dan200.computercraft.api.lua.*;
 import dan200.computercraft.api.pocket.IPocketAccess;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -353,6 +354,11 @@ public class LinkAPI implements ILuaAPI {
             return MethodResult.of(true);
         }
         else {return MethodResult.of(false,"player forgor");}
+    }
+
+    @LuaFunction(mainThread = true)
+    public final boolean isClientside(){
+        return getPlayer().level().isClientSide;
     }
 
     @LuaFunction(mainThread = true)

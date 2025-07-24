@@ -47,8 +47,9 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
-public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia, IColouredItem {
+public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia, IColouredItem, ICurioItem {
     private static final String NBT_UPGRADE = "Upgrade";
     private static final String NBT_UPGRADE_INFO = "UpgradeInfo";
     public static final String NBT_ON = "On";
@@ -136,10 +137,15 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
 
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int compartmentSlot, boolean selected) {
         if (!world.isClientSide && entity instanceof ServerPlayer player) {
-            int slot = InventoryUtil.getInventorySlotFromCompartment(player, compartmentSlot, stack);
-            if (slot >= 0) {
-                this.tick(stack, new LinkHolder.PlayerHolder(player, slot), false);
+            if (compartmentSlot <= 0) {
+                this.tick(stack, new LinkHolder.PlayerCuriosHolder(player), false);
+            } else {
+                int slot = InventoryUtil.getInventorySlotFromCompartment(player, compartmentSlot, stack);
+                if (slot >= 0) {
+                    this.tick(stack, new LinkHolder.PlayerHolder(player, slot), false);
+                }
             }
+
         }
     }
 

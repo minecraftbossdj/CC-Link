@@ -9,7 +9,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import top.theillusivec4.curios.api.CuriosApi;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public sealed interface LinkHolder {
     ServerLevel level();
@@ -20,13 +24,15 @@ public sealed interface LinkHolder {
 
     boolean isValid(ServerComputer var1);
 
+    boolean isCuriosValid(ServerComputer computer, ItemStack stack);
+
     void setChanged();
 
     default boolean isTerminalAlwaysVisible() {
         return false;
     }
 
-    public sealed interface EntityHolder extends LinkHolder permits LinkHolder.PlayerHolder, LinkHolder.ItemEntityHolder {
+    public sealed interface EntityHolder extends LinkHolder permits LinkHolder.PlayerHolder, LinkHolder.ItemEntityHolder, LinkHolder.PlayerCuriosHolder {
         Entity entity();
 
         default ServerLevel level() {
@@ -52,6 +58,16 @@ public sealed interface LinkHolder {
             return this.entity().isAlive() && LinkCoreComputerItem.isServerComputer(computer, this.entity().getInventory().getItem(this.slot()));
         }
 
+        public boolean isCuriosValid(ServerComputer computer, ItemStack stack) {
+            AtomicBoolean isCuriosFound = new AtomicBoolean(false);
+            CuriosApi.getCuriosInventory(this.entity).ifPresent(curiosInv ->{
+                if (curiosInv.findFirstCurio(stack.getItem()).isPresent()) {
+                    isCuriosFound.set(true);
+                }
+            });
+            return this.entity.isAlive() && isCuriosFound.get();
+        }
+
         public void setChanged() {
             this.entity.getInventory().setChanged();
         }
@@ -65,6 +81,34 @@ public sealed interface LinkHolder {
         }
     }
 
+    public static record PlayerCuriosHolder(ServerPlayer entity) implements LinkHolder.EntityHolder {
+        public PlayerCuriosHolder(ServerPlayer entity) {
+            this.entity = entity;
+        }
+
+        public boolean isValid(ServerComputer computer) {
+            return this.entity().isAlive();
+        }
+
+        public boolean isCuriosValid(ServerComputer computer, ItemStack stack) {
+            AtomicBoolean isCuriosFound = new AtomicBoolean(false);
+            CuriosApi.getCuriosInventory(this.entity).ifPresent(curiosInv ->{
+                if (curiosInv.findFirstCurio(stack.getItem()).isPresent()) {
+                    isCuriosFound.set(true);
+                }
+            });
+            return this.entity.isAlive() && isCuriosFound.get();
+        }
+
+        public void setChanged() {
+            this.entity.getInventory().setChanged();
+        }
+
+        public ServerPlayer entity() {
+            return this.entity;
+        }
+    }
+
     public static record ItemEntityHolder(
             ItemEntity entity) implements LinkHolder.EntityHolder {
         public ItemEntityHolder(ItemEntity entity) {
@@ -74,6 +118,13 @@ public sealed interface LinkHolder {
         public boolean isValid(ServerComputer computer) {
             return this.entity().isAlive() && LinkCoreComputerItem.isServerComputer(computer, this.entity().getItem());
         }
+
+        @Override
+        public boolean isCuriosValid(ServerComputer computer, ItemStack stack) {
+
+            return this.entity.isAlive() && LinkCoreComputerItem.isServerComputer(computer,this.entity().getItem());
+        }
+
 
         public void setChanged() {
             this.entity.setItem(this.entity.getItem().copy());
@@ -103,6 +154,11 @@ public sealed interface LinkHolder {
         }
 
         public boolean isValid(ServerComputer computer) {
+            return !this.lectern().isRemoved() && LinkCoreComputerItem.isServerComputer(computer, this.lectern.getItem());
+        }
+
+        @Override
+        public boolean isCuriosValid(ServerComputer computer, ItemStack stack) {
             return !this.lectern().isRemoved() && LinkCoreComputerItem.isServerComputer(computer, this.lectern.getItem());
         }
 

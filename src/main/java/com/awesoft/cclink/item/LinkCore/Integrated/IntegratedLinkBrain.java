@@ -65,6 +65,9 @@ public final class IntegratedLinkBrain implements IPocketAccess {
             if (oldHolder instanceof IntegratedLinkHolder.PlayerHolder) {
                 IntegratedLinkHolder.PlayerHolder p = (IntegratedLinkHolder.PlayerHolder)oldHolder;
                 var10000 = p.entity();
+            } else if (oldHolder instanceof IntegratedLinkHolder.PlayerCuriosHolder) {
+                IntegratedLinkHolder.PlayerCuriosHolder p = (IntegratedLinkHolder.PlayerCuriosHolder)oldHolder;
+                var10000 = p.entity();
             } else {
                 var10000 = null;
             }

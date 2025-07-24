@@ -2,6 +2,7 @@ package com.awesoft.cclink.item.LinkCore.Integrated;
 
 import com.awesoft.cclink.CCLink;
 import com.awesoft.cclink.Registration.ItemRegistry;
+import com.awesoft.cclink.item.LinkCore.LinkHolder;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.filesystem.Mount;
 import dan200.computercraft.api.media.IMedia;
@@ -44,13 +45,14 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class IntegratedLinkCoreComputerItem extends Item implements IComputerItem, IMedia, IColouredItem {
+public class IntegratedLinkCoreComputerItem extends Item implements IComputerItem, IMedia, IColouredItem, ICurioItem {
     private static final String NBT_UPGRADE = "Upgrade";
     private static final String NBT_UPGRADE_INFO = "UpgradeInfo";
     public static final String NBT_ON = "On";
@@ -138,9 +140,13 @@ public class IntegratedLinkCoreComputerItem extends Item implements IComputerIte
 
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int compartmentSlot, boolean selected) {
         if (!world.isClientSide && entity instanceof ServerPlayer player) {
-            int slot = InventoryUtil.getInventorySlotFromCompartment(player, compartmentSlot, stack);
-            if (slot >= 0) {
-                this.tick(stack, new IntegratedLinkHolder.PlayerHolder(player, slot), false);
+            if (compartmentSlot <= 0) {
+                this.tick(stack, new IntegratedLinkHolder.PlayerCuriosHolder(player), false);
+            } else {
+                int slot = InventoryUtil.getInventorySlotFromCompartment(player, compartmentSlot, stack);
+                if (slot >= 0) {
+                    this.tick(stack, new IntegratedLinkHolder.PlayerHolder(player, slot), false);
+                }
             }
         }
     }

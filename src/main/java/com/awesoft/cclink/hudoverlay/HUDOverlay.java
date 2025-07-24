@@ -1,6 +1,7 @@
 package com.awesoft.cclink.hudoverlay;
 
 
+import com.awesoft.cclink.CCLink;
 import com.awesoft.cclink.libs.ColorUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
