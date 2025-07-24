@@ -1,6 +1,7 @@
 package com.awesoft.cclink.item;
 
 import com.awesoft.cclink.block.LinkTurtle.LinkTurtleBlockEntity;
+import com.awesoft.cclink.block.SecureComputer.SecureComputerBlockEntity;
 import com.mojang.authlib.GameProfile;
 import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.computer.blocks.ComputerBlockEntity;
@@ -74,7 +75,7 @@ public class LinkKeyItem extends Item {
 
     @Override
     public InteractionResult useOn(UseOnContext pContext) {
-        if (pContext.getPlayer().level().getBlockEntity(pContext.getClickedPos()) instanceof LinkTurtleBlockEntity) {
+        if (pContext.getPlayer().level().getBlockEntity(pContext.getClickedPos()) instanceof LinkTurtleBlockEntity || pContext.getPlayer().level().getBlockEntity(pContext.getClickedPos()) instanceof SecureComputerBlockEntity) {
             if (pContext.getPlayer().getServer() != null) {
                 MinecraftServer server = pContext.getPlayer().getServer();
                 ServerComputerRegistry registry = ServerContext.get(server).registry();
@@ -99,6 +100,20 @@ public class LinkKeyItem extends Item {
                                 return InteractionResult.SUCCESS;
                             }
                         }
+                    } else if (blockEntity instanceof SecureComputerBlockEntity tile) {
+                        ServerComputer computer = tile.getServerComputer();
+                        if (computer != null) {
+                            CompoundTag tag = pContext.getItemInHand().getOrCreateTag();
+                            tag.putInt("SessionId", registry.getSessionID());
+                            if (computer.getInstanceUUID() != null) {
+                                tag.putUUID("InstanceId", computer.getInstanceUUID());
+                            } else {
+                                tag.putUUID("InstanceId", computer.register());
+                            }
+                            tag.putInt("computId", computer.getID());
+                            return InteractionResult.SUCCESS;
+                        }
+
                     }
                 }
             }
@@ -154,6 +169,8 @@ public class LinkKeyItem extends Item {
         if (tag != null) {
             if (tag.contains("computId")) {
                 tooltip.add(Component.literal("Linked to Id: " + tag.getInt("computId")));
+            } else {
+                tooltip.add(Component.literal("Not Linked"));
             }
         } else {
             tooltip.add(Component.literal("Not Linked"));

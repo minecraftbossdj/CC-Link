@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 public class BlockLoot {
     public static void register(BiConsumer<ResourceLocation, LootTable.Builder> add) {
         computerDrop(add, BlockRegistry.LINK_TURTLE_ADVANCED::get);
+        computerDrop(add, BlockRegistry.SECURE_COMPUTER_ADVANCED::get);
     }
 
     private static void computerDrop(

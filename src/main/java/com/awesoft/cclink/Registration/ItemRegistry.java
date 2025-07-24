@@ -7,6 +7,7 @@ import com.awesoft.cclink.item.LinkCore.LinkCoreComputerItem;
 import com.awesoft.cclink.item.LinkInterfaceHelmet;
 import com.awesoft.cclink.item.LinkKeyItem;
 import dan200.computercraft.shared.computer.core.ComputerFamily;
+import dan200.computercraft.shared.computer.items.ComputerItem;
 import dan200.computercraft.shared.turtle.items.TurtleItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.BlockItem;
@@ -35,6 +36,8 @@ public class ItemRegistry {
             () -> new LinkInterfaceHelmet(new Item.Properties().stacksTo(1), CCLinkArmorMaterials.LINK_INTERFACE));
 
     public static final RegistryObject<BlockItem> LINK_TURTLE_ADVANCED = ITEMS.register("link_turtle_advanced",()-> new TurtleItem(BlockRegistry.LINK_TURTLE_ADVANCED.get(),new Item.Properties()));
+
+    public static final RegistryObject<BlockItem> SECURE_COMPUTER_ADVANCED = ITEMS.register("secure_computer_advanced",()-> new ComputerItem(BlockRegistry.SECURE_COMPUTER_ADVANCED.get(),new Item.Properties()));
 
     public static final RegistryObject<Item> LINK_KEY = ITEMS.register("link_key",()-> new LinkKeyItem(new Item.Properties()));
 

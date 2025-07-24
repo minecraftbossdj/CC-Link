@@ -24,6 +24,7 @@ public class TabInit {
                         output.accept(ItemRegistry.LINK_CORE_COMMAND.get());
                         output.accept(ItemRegistry.LINK_INTERFACE.get());
                         output.accept(ItemRegistry.LINK_TURTLE_ADVANCED.get());
+                        output.accept(ItemRegistry.SECURE_COMPUTER_ADVANCED.get());
                         output.accept(ItemRegistry.LINK_KEY.get());
                     })
                     .build()
