@@ -22,10 +22,18 @@ public class TabInit {
                         output.accept(ItemRegistry.LINK_CORE.get());
                         output.accept(ItemRegistry.INTEGRATED_LINK_CORE.get());
                         output.accept(ItemRegistry.LINK_CORE_COMMAND.get());
+                        //output.accept(ItemRegistry.ENTITY_LINK.get()); //broke atm
                         output.accept(ItemRegistry.LINK_INTERFACE.get());
                         output.accept(ItemRegistry.LINK_TURTLE_ADVANCED.get());
-                        output.accept(ItemRegistry.SECURE_COMPUTER_ADVANCED.get());
                         output.accept(ItemRegistry.LINK_KEY.get());
+                        output.accept(ItemRegistry.SCANNER_UPGRADE.get());
+                        output.accept(ItemRegistry.SENSOR_UPGRADE.get());
+                        output.accept(ItemRegistry.INTROSPECTION_UPGRADE.get());
+                        output.accept(ItemRegistry.WORLD_UPGRADE.get());
+                        output.accept(ItemRegistry.OVERLAY_UPGRADE.get());
+                        output.accept(ItemRegistry.KINETIC_UPGRADE.get());
+                        output.accept(ItemRegistry.CHATTY_UPGRADE.get());
+                        //output.accept(ItemRegistry.LASER_UPGRADE.get()); //WIP, comes out next update
                     })
                     .build()
     );

@@ -7,6 +7,7 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.core.computer.ComputerSide;
 import dan200.computercraft.shared.computer.core.ComputerState;
 import dan200.computercraft.shared.computer.core.ServerComputer;
+import dan200.computercraft.shared.config.Config;
 import dan200.computercraft.shared.config.ConfigSpec;
 import dan200.computercraft.shared.network.client.PocketComputerDeletedClientMessage;
 import dan200.computercraft.shared.network.server.ServerNetworking;
@@ -26,7 +27,7 @@ public final class LinkServerComputer extends ServerComputer {
 
     LinkServerComputer(LinkBrain brain, LinkHolder holder, ServerComputer.Properties properties) {
         super(holder.level(), holder.blockPos(), properties
-                .terminalSize((Integer)ConfigSpec.computerTermWidth.get(), (Integer)ConfigSpec.computerTermHeight.get())
+                .terminalSize(Config.TURTLE_TERM_WIDTH,Config.TURTLE_TERM_HEIGHT)
                 .addComponent(CCLinkComponents.LINK, brain)
                 .addComponent(ComputerComponents.POCKET, brain)
         );

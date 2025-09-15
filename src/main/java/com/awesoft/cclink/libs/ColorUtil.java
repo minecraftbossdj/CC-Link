@@ -10,13 +10,10 @@ public class ColorUtil {
      * @return ARGB color value
      */
     public static int toArgb(int rgbColor, int transparency) {
-        // Clamp transparency to be within 0-100
         transparency = Math.max(0, Math.min(100, transparency));
 
-        // Convert transparency percentage to alpha value (0-255)
         int alpha = (int) ((transparency / 100.0) * 255);
 
-        // Return ARGB color value
         return (alpha << 24) | (rgbColor & 0xFFFFFF);
     }
 

@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "EMB",
+    "IOI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "E": {
+      "item": "cclink:sensor_upgrade"
+    },
+    "B": {
+      "item": "cclink:scanner_upgrade"
+    },
+    "M": {
+      "item": "computercraft:wired_modem_full"
+    },
+    "O": {
+      "item": "minecraft:observer"
+    }
+  },
+  "result": {
+    "item": "cclink:world_upgrade",
+    "count": 1
+  }
+}

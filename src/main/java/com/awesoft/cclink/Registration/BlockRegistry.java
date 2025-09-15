@@ -5,8 +5,6 @@ import com.awesoft.cclink.CCLink;
 import com.awesoft.cclink.CCLinkArmorMaterials;
 import com.awesoft.cclink.block.LinkTurtle.LinkTurtleBlock;
 import com.awesoft.cclink.block.LinkTurtle.LinkTurtleBlockEntity;
-import com.awesoft.cclink.block.SecureComputer.SecureComputerBlock;
-import com.awesoft.cclink.block.SecureComputer.SecureComputerBlockEntity;
 import com.awesoft.cclink.item.LinkCore.Integrated.IntegratedLinkCoreComputerItem;
 import com.awesoft.cclink.item.LinkCore.LinkCoreComputerItem;
 import com.awesoft.cclink.item.LinkInterfaceHelmet;
@@ -42,13 +40,6 @@ public class BlockRegistry {
     public static final RegistryHelper<BlockEntityType<?>, BlockEntityType<LinkTurtleBlockEntity>> LINK_TURTLE_BLOCK_ENTITY_REGISTER =
             new RegistryHelper<>(ForgeRegistries.BLOCK_ENTITY_TYPES.getRegistryKey());
 
-    public static final RegistryHelper<Block, SecureComputerBlock> SECURE_COMPUTER_BLOCK_REGISTER =
-            new RegistryHelper<>(ForgeRegistries.BLOCKS.getRegistryKey());
-
-    public static final RegistryHelper<BlockEntityType<?>, BlockEntityType<SecureComputerBlockEntity>> SECURE_COMPUTER_BLOCK_ENTITY_REGISTER =
-            new RegistryHelper<>(ForgeRegistries.BLOCK_ENTITY_TYPES.getRegistryKey());
-
-
     public static final RegistryEntry<BlockEntityType<LinkTurtleBlockEntity>> LINK_TURTLE_ADVANCED_ENTITY =
             LINK_TURTLE_BLOCK_ENTITY_REGISTER.register("link_turtle_advanced", () ->
                     BlockEntityType.Builder.<LinkTurtleBlockEntity>of(
@@ -70,30 +61,9 @@ public class BlockRegistry {
                     )
             );
 
-    public static final RegistryEntry<BlockEntityType<SecureComputerBlockEntity>> SECURE_COMPUTER_ENTITY =
-            SECURE_COMPUTER_BLOCK_ENTITY_REGISTER.register("secure_computer_advanced", () ->
-                    BlockEntityType.Builder.<SecureComputerBlockEntity>of(
-                            (pos, state) -> new SecureComputerBlockEntity(
-                                    BlockRegistry.SECURE_COMPUTER_ENTITY.get(),
-                                    pos,state, ComputerFamily.ADVANCED
-                            ),
-                            BlockRegistry.SECURE_COMPUTER_ADVANCED.get()
-                    ).build(null)
-            );
-
-    public static final RegistryEntry<SecureComputerBlock> SECURE_COMPUTER_ADVANCED =
-            SECURE_COMPUTER_BLOCK_REGISTER.register("secure_computer_advanced", () ->
-                    new SecureComputerBlock(
-                            BlockBehaviour.Properties.of().strength(2.5f),
-                            SECURE_COMPUTER_ENTITY
-                    )
-            );
-
     public static void register(IEventBus bus) {
         LINK_TURTLE_BLOCK_REGISTER.registerBus(bus);
         LINK_TURTLE_BLOCK_ENTITY_REGISTER.registerBus(bus);
-        SECURE_COMPUTER_BLOCK_REGISTER.registerBus(bus);
-        SECURE_COMPUTER_BLOCK_ENTITY_REGISTER.registerBus(bus);
     }
 
 

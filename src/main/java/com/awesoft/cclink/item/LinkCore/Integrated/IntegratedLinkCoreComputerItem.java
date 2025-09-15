@@ -2,7 +2,11 @@ package com.awesoft.cclink.item.LinkCore.Integrated;
 
 import com.awesoft.cclink.CCLink;
 import com.awesoft.cclink.Registration.ItemRegistry;
+import com.awesoft.cclink.gui.LinkMenu;
+import com.awesoft.cclink.gui.integrated.IntegratedLinkMenu;
+import com.awesoft.cclink.item.LinkCore.ItemInvLinkProvider;
 import com.awesoft.cclink.item.LinkCore.LinkHolder;
+import com.awesoft.cclink.libs.ItemHandlerContainer;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.filesystem.Mount;
 import dan200.computercraft.api.media.IMedia;
@@ -20,6 +24,7 @@ import dan200.computercraft.shared.computer.core.ServerContext;
 import dan200.computercraft.shared.computer.inventory.ComputerMenuWithoutInventory;
 import dan200.computercraft.shared.computer.items.IComputerItem;
 import dan200.computercraft.shared.config.Config;
+import dan200.computercraft.shared.container.SingleContainerData;
 import dan200.computercraft.shared.lectern.CustomLecternBlock;
 import dan200.computercraft.shared.network.container.ComputerContainerData;
 import dan200.computercraft.shared.platform.PlatformHelper;
@@ -44,6 +49,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.items.ItemStackHandler;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
@@ -63,6 +71,38 @@ public class IntegratedLinkCoreComputerItem extends Item implements IComputerIte
     public IntegratedLinkCoreComputerItem(Properties settings, ComputerFamily family) {
         super(settings);
         this.family = family;
+    }
+
+    @Override
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
+        return new ItemInvIntegratedLinkProvider();
+    }
+
+    @Override
+    public CompoundTag getShareTag(ItemStack stack) {
+        CompoundTag tag = super.getShareTag(stack);
+        if (tag == null) tag = new CompoundTag();
+
+        CompoundTag finalTag = tag;
+        stack.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(cap -> {
+            if (cap instanceof ItemInvLinkProvider invProvider) {
+                finalTag.put("Inventory", invProvider.serializeNBT());
+            }
+        });
+
+        return finalTag;
+    }
+
+    @Override
+    public void readShareTag(ItemStack stack, @Nullable CompoundTag nbt) {
+        super.readShareTag(stack, nbt);
+        if (nbt != null && nbt.contains("Inventory")) {
+            stack.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(cap -> {
+                if (cap instanceof ItemStackHandler handler) {
+                    handler.deserializeNBT(nbt.getCompound("Inventory"));
+                }
+            });
+        }
     }
 
     public ItemStack create(int id, @Nullable String label, int colour, @Nullable UpgradeData<IPocketUpgrade> upgrade) {
@@ -182,7 +222,25 @@ public class IntegratedLinkCoreComputerItem extends Item implements IComputerIte
                 }
 
                 if (!stop) {
-                    openImpl(player, stack, holder, hand == InteractionHand.OFF_HAND, computer);
+                    //openImpl(player, stack, holder, hand == InteractionHand.OFF_HAND, computer);
+
+                    PlatformHelper.get().openMenu(
+                            player,
+                            player.getItemInHand(hand).getHoverName(),
+                            (id, inventory, entity) ->
+                                    new IntegratedLinkMenu(
+                                            id,
+                                            (p) -> true,
+                                            ComputerFamily.ADVANCED,
+                                            computer,
+                                            null,
+                                            player.getInventory(),
+                                            new ItemHandlerContainer(stack.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null)),
+                                            (SingleContainerData) brain::getSelectedSlot
+
+                                    ),
+                            new ComputerContainerData(computer, ItemStack.EMPTY)
+                    );
                 }
             } else {
                 CuriosApi.getCuriosHelper().findFirstCurio(player, ItemRegistry.LINK_INTERFACE.get()).ifPresent((slotResult) -> {
@@ -198,7 +256,25 @@ public class IntegratedLinkCoreComputerItem extends Item implements IComputerIte
                     }
 
                     if (!stop) {
-                        openImpl(player, stack, holder, hand == InteractionHand.OFF_HAND, computer);
+                        //openImpl(player, stack, holder, hand == InteractionHand.OFF_HAND, computer);
+
+                        PlatformHelper.get().openMenu(
+                                player,
+                                player.getItemInHand(hand).getHoverName(),
+                                (id, inventory, entity) ->
+                                        new IntegratedLinkMenu(
+                                                id,
+                                                (p) -> true,
+                                                ComputerFamily.ADVANCED,
+                                                computer,
+                                                null,
+                                                player.getInventory(),
+                                                new ItemHandlerContainer(stack.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null)),
+                                                (SingleContainerData) brain::getSelectedSlot
+
+                                        ),
+                                new ComputerContainerData(computer, ItemStack.EMPTY)
+                        );
                     }
                 });
             }

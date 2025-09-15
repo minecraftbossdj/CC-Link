@@ -13,6 +13,7 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.IForgeShearable;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -26,7 +27,7 @@ public class LuaConverter {
 
     public static Map<String, Object> entityToLua(Entity entity) {
         Map<String, Object> data = new HashMap<>();
-        data.put("id", entity.getId());
+        data.put("id", ForgeRegistries.ENTITY_TYPES.getKey(entity.getType()).toString());
         data.put("uuid", entity.getStringUUID());
         data.put("name", entity.getName().getString());
         data.put("tags", entity.getTags());
@@ -109,7 +110,6 @@ public class LuaConverter {
         return tag.registry().location() + "/" + tag.location();
     }
 
-    // BlockPos tricks
     public static BlockPos convertToBlockPos(Map<?, ?> table) throws LuaException {
         if (!table.containsKey("x") || !table.containsKey("y") || !table.containsKey("z"))
             throw new LuaException("Table should be block position table");

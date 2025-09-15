@@ -8,6 +8,7 @@ import dan200.computercraft.core.computer.ComputerSide;
 import dan200.computercraft.shared.common.IColouredItem;
 import dan200.computercraft.shared.computer.core.ServerComputer;
 
+import dan200.computercraft.shared.config.Config;
 import dan200.computercraft.shared.network.server.ServerNetworking;
 
 
@@ -23,6 +24,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
@@ -37,7 +39,7 @@ public final class LinkBrain implements IPocketAccess {
     private int lightColour = -1;
 
     public LinkBrain(LinkHolder holder, @Nullable UpgradeData<IPocketUpgrade> upgrade, ServerComputer.Properties properties) {
-        this.computer = new LinkServerComputer(this, holder, properties);
+        this.computer = new LinkServerComputer(this, holder, properties.terminalSize(Config.TURTLE_TERM_WIDTH,Config.TURTLE_TERM_HEIGHT));
         this.holder = holder;
         this.position = holder.pos();
         this.upgrade = UpgradeData.copyOf(upgrade);
@@ -48,12 +50,20 @@ public final class LinkBrain implements IPocketAccess {
         return this.computer;
     }
 
+    public int getSelectedSlot() {
+        return 1;
+    }
+
     LinkHolder holder() {
         return this.holder;
     }
 
     public void addPeripheral(ComputerSide side, IPeripheral peripheral) {
         this.computer.setPeripheral(side,peripheral);
+    }
+
+    public boolean canPlayerUse(Player player) {
+        return true;
     }
 
     public void updateHolder(LinkHolder newHolder) {

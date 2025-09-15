@@ -25,7 +25,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
     @Override
     protected void generate() {
         this.add(BlockRegistry.LINK_TURTLE_ADVANCED.get(), this::createComputerDrop);
-        this.add(BlockRegistry.SECURE_COMPUTER_ADVANCED.get(), this::createComputerDrop);
+        //this.add(BlockRegistry.SECURE_COMPUTER_ADVANCED.get(), this::createComputerDrop);
     }
 
     private LootTable.Builder createComputerDrop(Block block) {
@@ -51,8 +51,8 @@ public class ModBlockLootTables extends BlockLootSubProvider {
     @Override
     protected Iterable<Block> getKnownBlocks() {
         return List.of(
-                BlockRegistry.LINK_TURTLE_ADVANCED.get(),
-                BlockRegistry.SECURE_COMPUTER_ADVANCED.get()
+                BlockRegistry.LINK_TURTLE_ADVANCED.get()/*,
+                BlockRegistry.SECURE_COMPUTER_ADVANCED.get()*/
         );
     }
 }

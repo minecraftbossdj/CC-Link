@@ -3,10 +3,13 @@ package com.awesoft.cclink;
 import com.awesoft.cclink.Registration.*;
 import com.awesoft.cclink.client.LinkTurtleRenderer;
 import com.awesoft.cclink.datagen.recipes.ModRecipes;
+import com.awesoft.cclink.gui.client.LinkScreen;
+import com.awesoft.cclink.gui.integrated.IntegratedLinkScreen;
 import com.awesoft.cclink.networking.OpenLinkNetworkHandler;
 import com.awesoft.cclink.networking.OpenLinkPacket;
 import com.awesoft.cclink.networking.OverlayNetworkHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.network.chat.Component;
@@ -29,19 +32,12 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
-// The value here should match an entry in the META-INF/mods.toml file
 @Mod("cclink")
 public class CCLink {
 
     public static final String NAME = "CC Link";
     public static final Logger LOGGER = LogManager.getLogger(NAME);
-    // Our mod id
-
-
     public static final String MODID = "cclink";
-
-
-
 
     public CCLink() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -56,15 +52,14 @@ public class CCLink {
         APIRegistry.register();
         LOGGER.info("AHHHH CC APIS AHHHHHH IM SCARED AHHHHHHH!!!!!");
         ModRecipes.register(bus);
-        LOGGER.info("RAHHHHH MOD RECIPES JUMPSCARE! did i scare you? i hope i did, mod recipes quite scary fr");
+        LOGGER.info("RAHHHHH MOD RECIPES JUMPSCARE! did i scare you? I'm sure scared, ugh I dont wanna touch datagen ever again :sob:");
         CCLinkConfig.register(ModLoadingContext.get());
         LOGGER.info("heloer!! -from config! :3");
-
+        CCMenus.registerMenu();
+        LOGGER.info("uh oh that MIGHT be the menus ngl");
 
 
         MinecraftForge.EVENT_BUS.register(this);
-
-
     }
 
     public void onCommonSetup(FMLCommonSetupEvent evt) {
@@ -78,6 +73,10 @@ public class CCLink {
             BlockRegistry.LINK_TURTLE_ADVANCED_ENTITY.get(),
             LinkTurtleRenderer::new
         );
+
+        MenuScreens.register(CCMenus.LINK_MENU.get(), LinkScreen::new);
+        MenuScreens.register(CCMenus.INTEGRATED_LINK_MENU.get(), IntegratedLinkScreen::new);
+        LOGGER.info("client startup trolling complete, returning to HQ");
     }
 
 }

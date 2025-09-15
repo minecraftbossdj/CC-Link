@@ -2,6 +2,8 @@ package com.awesoft.cclink.item.LinkCore;
 
 import com.awesoft.cclink.CCLink;
 import com.awesoft.cclink.Registration.ItemRegistry;
+import com.awesoft.cclink.gui.LinkMenu;
+import com.awesoft.cclink.libs.ItemHandlerContainer;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.filesystem.Mount;
 import dan200.computercraft.api.media.IMedia;
@@ -18,6 +20,7 @@ import dan200.computercraft.shared.computer.core.ServerContext;
 import dan200.computercraft.shared.computer.inventory.ComputerMenuWithoutInventory;
 import dan200.computercraft.shared.computer.items.IComputerItem;
 import dan200.computercraft.shared.config.Config;
+import dan200.computercraft.shared.container.SingleContainerData;
 import dan200.computercraft.shared.lectern.CustomLecternBlock;
 import dan200.computercraft.shared.network.container.ComputerContainerData;
 import dan200.computercraft.shared.platform.PlatformHelper;
@@ -25,14 +28,19 @@ import dan200.computercraft.shared.util.InventoryUtil;
 import dan200.computercraft.shared.util.NBTUtil;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -46,6 +54,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.ItemStackHandler;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
@@ -61,6 +75,41 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
         super(settings);
         this.family = family;
     }
+
+    @Override
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
+        return new ItemInvLinkProvider();
+    }
+
+    @Override
+    public CompoundTag getShareTag(ItemStack stack) {
+        CompoundTag tag = super.getShareTag(stack);
+        if (tag == null) tag = new CompoundTag();
+
+        CompoundTag finalTag = tag;
+        stack.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(cap -> {
+            if (cap instanceof ItemInvLinkProvider invProvider) {
+                finalTag.put("Inventory", invProvider.serializeNBT());
+            }
+        });
+
+        return finalTag;
+    }
+
+    @Override
+    public void readShareTag(ItemStack stack, @Nullable CompoundTag nbt) {
+        super.readShareTag(stack, nbt);
+        if (nbt != null && nbt.contains("Inventory")) {
+            stack.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(cap -> {
+                if (cap instanceof ItemStackHandler handler) {
+                    handler.deserializeNBT(nbt.getCompound("Inventory"));
+                }
+            });
+        }
+    }
+
+
+
 
     public ItemStack create(int id, @Nullable String label, int colour, @Nullable UpgradeData<IPocketUpgrade> upgrade) {
         ItemStack result = new ItemStack(this);
@@ -135,6 +184,15 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
         return changed;
     }
 
+    public final boolean hasUpgrade(String upgradeid, ItemStack stack) {
+        Item id = BuiltInRegistries.ITEM.get(new ResourceLocation(upgradeid));
+        Set<Item> items = Set.of(id);
+
+        Container Inv = new ItemHandlerContainer(stack.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null));
+
+        return Inv.hasAnyOf(items);
+    }
+
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int compartmentSlot, boolean selected) {
         if (!world.isClientSide && entity instanceof ServerPlayer player) {
             if (compartmentSlot <= 0) {
@@ -145,6 +203,8 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
                     this.tick(stack, new LinkHolder.PlayerHolder(player, slot), false);
                 }
             }
+
+            ServerComputer computer = getServerComputer(world.getServer(),stack);
 
         }
     }
@@ -180,7 +240,25 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
                 }
 
                 if (!stop) {
-                    openImpl(player, stack, holder, hand == InteractionHand.OFF_HAND, computer);
+                    //openImpl(player, stack, holder, hand == InteractionHand.OFF_HAND, computer);
+
+                    PlatformHelper.get().openMenu(
+                            player,
+                            player.getItemInHand(hand).getHoverName(),
+                            (id, inventory, entity) ->
+                                    new LinkMenu(
+                                            id,
+                                            (p) -> true,
+                                            ComputerFamily.ADVANCED,
+                                            computer,
+                                            null,
+                                            player.getInventory(),
+                                            new ItemHandlerContainer(stack.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null)),
+                                            (SingleContainerData) brain::getSelectedSlot
+
+                                    ),
+                            new ComputerContainerData(computer, ItemStack.EMPTY)
+                    );
                 }
             } else {
                 CuriosApi.getCuriosHelper().findFirstCurio(player, ItemRegistry.LINK_INTERFACE.get()).ifPresent((slotResult) -> {
@@ -196,7 +274,25 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
                     }
 
                     if (!stop) {
-                        openImpl(player, stack, holder, hand == InteractionHand.OFF_HAND, computer);
+                        //openImpl(player, stack, holder, hand == InteractionHand.OFF_HAND, computer);
+                        PlatformHelper.get().openMenu(
+                                player,
+                                player.getItemInHand(hand).getHoverName(),
+                                (id, inventory, entity) ->
+                                        new LinkMenu(
+                                                id,
+                                                (p) -> true,
+                                                ComputerFamily.ADVANCED,
+                                                computer,
+                                                null,
+                                                player.getInventory(),
+                                                new ItemHandlerContainer(stack.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null)),
+                                                (SingleContainerData) brain::getSelectedSlot
+
+                                        ),
+                                new ComputerContainerData(computer, ItemStack.EMPTY)
+                        );
+
                     }
                 });
             }

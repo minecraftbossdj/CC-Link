@@ -13,6 +13,7 @@ public class TurtleUpgradeRegistry {
 
     //public static final RegistryObject<TurtleUpgradeSerialiser<TestTurtleUpgrade>> TEST_TURTLE = TurtleUpgradeRegistry.TURTLE_SERIALIZER.register(TurtleUpgradeRegistry.ID.TEST_TURTLE.getPath(), () -> TurtleUpgradeSerialiser.simpleWithCustomItem(TestTurtleUpgrade::new));
 
+    //TODO: add upgrades + make pocket computer upgrade registry
 
     public static class ID {
         public static final ResourceLocation TEST_TURTLE = new ResourceLocation(CCLink.MODID, "test_turtle");

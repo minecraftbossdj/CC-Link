@@ -3,9 +3,11 @@ package com.awesoft.cclink.item.LinkCore;
 import com.awesoft.cclink.CCLink;
 import com.awesoft.cclink.hudoverlay.packets.HUDOverlayUpdatePacket;
 import com.awesoft.cclink.hudoverlay.packets.PacketManager;
+import com.awesoft.cclink.libs.ComputerLib;
 import com.awesoft.cclink.libs.LuaConverter;
 import com.awesoft.cclink.libs.PacketCooldownManager;
 import com.awesoft.cclink.libs.RaycastingUtil;
+import com.awesoft.cclink.upgrades.luaFunctions.*;
 import dan200.computercraft.api.lua.ILuaAPI;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
@@ -17,13 +19,17 @@ import dan200.computercraft.shared.pocket.peripherals.PocketModemPeripheral;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
@@ -61,7 +67,6 @@ public class LinkAPI implements ILuaAPI {
     public LinkAPI(IComputerSystem computer, IPocketAccess pocket) {
         this.computer = computer;
         this.pocket = pocket;
-
     }
 
     @Override
@@ -85,6 +90,10 @@ public class LinkAPI implements ILuaAPI {
         }
     }
 
+    public final Container getLinkInventory() {
+        return ComputerLib.getContainerFromLinkHolder(getPlayer());
+    }
+
     public final Boolean isPlayerAlive() {
         return getPlayer() != null;
     }
@@ -97,230 +106,71 @@ public class LinkAPI implements ILuaAPI {
     }
 
     @LuaFunction(mainThread = true)
-    public final Map<String, Object> getOverlay() {
-        Map<String, Object> info = new HashMap<>();
+    public final MethodResult listUpgrades() {
 
-        List<HUDOverlayUpdatePacket.Entry> entries = new ArrayList<>();
-
-        ILuaFunction send = args -> {
-            if (PacketCooldownManager.canSendPacket(getOwnerUUID())) {
-                if (getPlayer() != null) {
-                    HUDOverlayUpdatePacket packet = new HUDOverlayUpdatePacket(Objects.requireNonNull(getPlayer()).getUUID(), entries);
-
-                    PacketManager.sendToClient(getPlayer().getUUID(), packet);
-
-                    return MethodResult.of(true);
-                }
-                return MethodResult.of(false);
-            } else {
-                return MethodResult.of(false,"On cooldown!");
+        ArrayList<String> result = new ArrayList<>();
+        var size = getLinkInventory().getContainerSize();
+        for (var i = 0; i < size; i++) {
+            var stack = getLinkInventory().getItem(i);
+            if (!stack.isEmpty()) {
+                ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+                result.add(id.toString());
             }
-        };
-        info.put("send",send);
-
-        // oh my god its fucking text :WHAT:
-        ILuaFunction addOrUpdateTextElement = args -> {
-            entries.add(HUDOverlayUpdatePacket.Entry.text(
-                    args.getString(0),
-                    args.getString(1),
-                    args.getInt(2),
-                    args.getInt(3),
-                    args.getInt(4),
-                    (float)args.getDouble(5),
-                    false,
-                    false,
-                    false
-            ));
-            return MethodResult.of(true);
-        };
-        info.put("addOrUpdateTextElement",addOrUpdateTextElement);
-
-        ILuaFunction removeTextElement = args -> {
-            entries.add(HUDOverlayUpdatePacket.Entry.text(
-                    args.getString(0),
-                    "",
-                    0,0,0,
-                    0.0f,
-                    false,
-                    true,
-                    false
-            ));
-            return MethodResult.of(true);
-        };
-        info.put("removeTextElement",removeTextElement);
-
-        ILuaFunction clearText = args -> {
-            entries.add(HUDOverlayUpdatePacket.Entry.text(
-                    "",
-                    "",
-                    0,0,0,
-                    0.0f,
-                    false,
-                    false,
-                    true
-            ));
-            return MethodResult.of(true);
-        };
-        info.put("clearText",clearText);
-
-
-        //rightbound string :wilted_rose:
-        ILuaFunction addOrUpdateRightboundTextElement = args -> {
-            entries.add(HUDOverlayUpdatePacket.Entry.text(
-                    args.getString(0),
-                    args.getString(1),
-                    args.getInt(2),
-                    args.getInt(3),
-                    args.getInt(4),
-                    (float)args.getDouble(5),
-                    true,
-                    false,
-                    false
-            ));
-            return MethodResult.of(true);
-        };
-        info.put("addOrUpdateRightboundTextElement",addOrUpdateRightboundTextElement);
-
-        ILuaFunction removeRightboundTextElement = args -> {
-            entries.add(HUDOverlayUpdatePacket.Entry.text(
-                    args.getString(0),
-                    "",
-                    0,0,0,
-                    0.0f,
-                    true,
-                    true,
-                    false
-            ));
-            return MethodResult.of(true);
-        };
-        info.put("removeRightboundTextElement",removeRightboundTextElement);
-
-        ILuaFunction clearRightboundText = args -> {
-            entries.add(HUDOverlayUpdatePacket.Entry.text(
-                    "",
-                    "",
-                    0,0,0,
-                    0.0f,
-                    true,
-                    false,
-                    true
-            ));
-            return MethodResult.of(true);
-        };
-        info.put("clearRightboundText",clearRightboundText);
-
-
-        //box elementer
-        ILuaFunction addOrUpdateRectElement = args -> {
-            entries.add(HUDOverlayUpdatePacket.Entry.rect(
-                    args.getString(0),
-                    args.getInt(1),
-                    args.getInt(2),
-                    args.getInt(3),
-                    args.getInt(4),
-                    args.getInt(5),
-                    args.getInt(6),
-                    false,
-                    false
-            ));
-            return MethodResult.of(true);
-        };
-        info.put("addOrUpdateRectElement",addOrUpdateRectElement);
-
-        ILuaFunction removeRectElement = args -> {
-            entries.add(HUDOverlayUpdatePacket.Entry.rect(
-                    args.getString(0),
-                    0,0,0,0,0,0,
-                    true,
-                    false
-            ));
-            return MethodResult.of(true);
-        };
-        info.put("removeRectElement",removeRectElement);
-
-        ILuaFunction clearRect = args -> {
-            entries.add(HUDOverlayUpdatePacket.Entry.rect(
-                    "",
-                    0,0,0,0,0,0,
-                    false,
-                    true
-            ));
-            return MethodResult.of(true);
-        };
-        info.put("clearRect",clearRect);
-
-
-        ILuaFunction addOrUpdateItemElement = args -> {
-            entries.add(HUDOverlayUpdatePacket.Entry.item(
-                args.getString(0),
-                    args.getString(1),
-                    args.getInt(2),
-                    args.getInt(3),
-                    false,
-                    false
-            ));
-            return MethodResult.of(true);
-        };
-        info.put("addOrUpdateItemElement",addOrUpdateItemElement);
-
-        ILuaFunction removeItemElement = args -> {
-            entries.add(HUDOverlayUpdatePacket.Entry.item(
-                    args.getString(0),
-                   "",0,0,
-                    true,
-                    false
-            ));
-            return MethodResult.of(true);
-        };
-        info.put("removeItemElement",removeItemElement);
-
-        ILuaFunction clearItem = args -> {
-            entries.add(HUDOverlayUpdatePacket.Entry.item(
-                    "","",0,0,
-                    false,
-                    true
-            ));
-            return MethodResult.of(true);
-        };
-        info.put("clearItem",clearItem);
-
-        ILuaFunction clearAll = args -> {
-            entries.add(HUDOverlayUpdatePacket.Entry.text(
-                    "",
-                    "",
-                    0,0,0,
-                    0.0f,
-                    false,
-                    false,
-                    true
-            )); //text
-            entries.add(HUDOverlayUpdatePacket.Entry.text(
-                    "",
-                    "",
-                    0,0,0,
-                    0.0f,
-                    true,
-                    false,
-                    true
-            )); //rightbound text
-            entries.add(HUDOverlayUpdatePacket.Entry.rect(
-                    "",
-                    0,0,0,0,0,0,
-                    false,
-                    true
-            )); //rect
-            entries.add(HUDOverlayUpdatePacket.Entry.item(
-                    "","",0,0,
-                    false,
-                    true
-            )); //item
-            return MethodResult.of(true);
-        };
-        info.put("clearAll",clearAll);
-
-        return info;
+        }
+        return MethodResult.of(true, result);
     }
 
+    @LuaFunction(mainThread = true)
+    public final MethodResult hasUpgrade(String upgradeid) {
+        Item id = BuiltInRegistries.ITEM.get(new ResourceLocation(upgradeid));
+        Set<Item> items = Set.of(id);
+
+        return MethodResult.of(getLinkInventory().hasAnyOf(items));
+    }
+
+    public final boolean hasUpgradeNonLua(String upgradeid) {
+        Item id = BuiltInRegistries.ITEM.get(new ResourceLocation(upgradeid));
+        Set<Item> items = Set.of(id);
+
+        return getLinkInventory().hasAnyOf(items);
+    }
+
+    @LuaFunction(mainThread = true)
+    public final Map<String, Object> getUpgradeFunctions() {
+        Map<String, Object> functions = new HashMap<>();
+
+        if (hasUpgradeNonLua("cclink:scanner_upgrade")) {
+            ScannerUpgradeFunctions funcs = new ScannerUpgradeFunctions(getPlayer(),computer);
+            functions.put("scanner",funcs.getFunctions());
+        }
+        if (hasUpgradeNonLua("cclink:sensor_upgrade")) {
+            SensorUpgradeFunctions funcs = new SensorUpgradeFunctions(getPlayer(),computer);
+            functions.put("sensor",funcs.getFunctions());
+        }
+        if (hasUpgradeNonLua("cclink:introspection_upgrade")) {
+            IntrospectionUpgradeFunctions funcs = new IntrospectionUpgradeFunctions(getPlayer());
+            functions.put("introspection",funcs.getFunctions());
+        }
+        if (hasUpgradeNonLua("cclink:world_upgrade")) {
+            WorldUpgradeFunctions funcs = new WorldUpgradeFunctions(getPlayer());
+            functions.put("world",funcs.getFunctions());
+        }
+        if (hasUpgradeNonLua("cclink:overlay_upgrade")) {
+            OverlayUpgradeFunctions funcs = new OverlayUpgradeFunctions(getPlayer());
+            functions.put("overlay",funcs.getFunctions());
+        }
+        if (hasUpgradeNonLua("cclink:kinetic_upgrade")) {
+            KineticUpgradeFunctions funcs = new KineticUpgradeFunctions(getPlayer());
+            functions.put("kinetic",funcs.getFunctions());
+        }
+        if (hasUpgradeNonLua("cclink:chatty_upgrade")) {
+            ChattyUpgradeFunctions funcs = new ChattyUpgradeFunctions(getPlayer());
+            functions.put("chatty",funcs.getFunctions());
+        }
+        //TODO: lasergun
+
+        return functions;
+    }
 
     @LuaFunction(mainThread = true)
     public final Map<String, Object> getInfo() {

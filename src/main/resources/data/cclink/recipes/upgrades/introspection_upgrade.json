@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IHI",
+    "EME",
+    "IDI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "H": {
+      "item": "minecraft:hopper"
+    },
+    "E": {
+      "item": "minecraft:ender_chest"
+    },
+    "M": {
+      "item": "computercraft:wired_modem_full"
+    },
+    "D": {
+      "item": "minecraft:diamond_helmet"
+    }
+  },
+  "result": {
+    "item": "cclink:introspection_upgrade",
+    "count": 1
+  }
+}

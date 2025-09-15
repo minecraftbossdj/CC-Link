@@ -1,5 +1,8 @@
 package com.awesoft.cclink.libs;
 
+import com.awesoft.cclink.Registration.ItemRegistry;
+import com.awesoft.cclink.gui.LinkMenu;
+import com.awesoft.cclink.gui.integrated.IntegratedLinkMenu;
 import com.awesoft.cclink.item.LinkCore.Integrated.IntegratedLinkBrain;
 import com.awesoft.cclink.item.LinkCore.Integrated.IntegratedLinkHolder;
 import com.awesoft.cclink.item.LinkCore.Integrated.IntegratedLinkServerComputer;
@@ -17,23 +20,36 @@ import dan200.computercraft.shared.computer.core.ServerComputerRegistry;
 import dan200.computercraft.shared.computer.core.ServerContext;
 import dan200.computercraft.shared.computer.inventory.ComputerMenuWithoutInventory;
 import dan200.computercraft.shared.computer.items.IComputerItem;
+import dan200.computercraft.shared.config.Config;
+import dan200.computercraft.shared.container.SingleContainerData;
 import dan200.computercraft.shared.network.container.ComputerContainerData;
 import dan200.computercraft.shared.platform.PlatformHelper;
 import dan200.computercraft.shared.util.NBTUtil;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.server.ServerLifecycleHooks;
+import top.theillusivec4.curios.api.CuriosApi;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class ComputerLib {
@@ -44,22 +60,142 @@ public class ComputerLib {
     }
 
     public static void openLinkImpl(Player player, ItemStack stack, LinkHolder holder, boolean isTypingOnly, ServerComputer computer, boolean curios) {
-        if (curios) { //this might be a terrible idea ngl
-            PlatformHelper.get().openMenu(player, stack.getHoverName(), (id, inventory, entity) -> new ComputerMenuWithoutInventory(isTypingOnly ? (MenuType) ModRegistry.Menus.POCKET_COMPUTER_NO_TERM.get() : (MenuType) ModRegistry.Menus.COMPUTER.get(), id, inventory, (p) -> holder.isCuriosValid(computer,stack), computer), new ComputerContainerData(computer, stack));
-        } else {
-            PlatformHelper.get().openMenu(player, stack.getHoverName(), (id, inventory, entity) -> new ComputerMenuWithoutInventory(isTypingOnly ? (MenuType) ModRegistry.Menus.POCKET_COMPUTER_NO_TERM.get() : (MenuType) ModRegistry.Menus.COMPUTER.get(), id, inventory, (p) -> holder.isValid(computer), computer), new ComputerContainerData(computer, stack));
-        }
+        PlatformHelper.get().openMenu(
+                player,
+                stack.getHoverName(),
+                (id, inventory, entity) ->
+                        new LinkMenu(
+                                id,
+                                (p) -> true,
+                                ComputerFamily.ADVANCED,
+                                computer,
+                                null,
+                                player.getInventory(),
+                                new ItemHandlerContainer(stack.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null)),
+                                new SingleContainerData() {
+                                    @Override
+                                    public int get() {
+                                        return 1;
+                                    }
+                                }
+
+                        ),
+                new ComputerContainerData(computer, stack)
+        );
     }
 
     public static void openIntegratedLinkImpl(Player player, ItemStack stack, IntegratedLinkHolder holder, boolean isTypingOnly, ServerComputer computer, boolean curios) {
-        if (curios) { //this might be a terrible idea ngl
-            PlatformHelper.get().openMenu(player, stack.getHoverName(), (id, inventory, entity) -> new ComputerMenuWithoutInventory(isTypingOnly ? (MenuType) ModRegistry.Menus.POCKET_COMPUTER_NO_TERM.get() : (MenuType) ModRegistry.Menus.COMPUTER.get(), id, inventory, (p) -> holder.isCuriosValid(computer,stack), computer), new ComputerContainerData(computer, stack));
+        PlatformHelper.get().openMenu(
+                player,
+                stack.getHoverName(),
+                (id, inventory, entity) ->
+                        new IntegratedLinkMenu(
+                                id,
+                                (p) -> true,
+                                ComputerFamily.ADVANCED,
+                                computer,
+                                null,
+                                player.getInventory(),
+                                new ItemHandlerContainer(stack.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null)),
+                                new SingleContainerData() {
+                                    @Override
+                                    public int get() {
+                                        return 1;
+                                    }
+                                }
+
+                        ),
+                new ComputerContainerData(computer, stack)
+        );
+    }
+
+    public static Container getContainerFromItem(ItemStack item) {
+        var handler = item.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(null);
+        if (handler != null) {
+            return new ItemHandlerContainer(handler);
         } else {
-            PlatformHelper.get().openMenu(player, stack.getHoverName(), (id, inventory, entity) -> new ComputerMenuWithoutInventory(isTypingOnly ? (MenuType) ModRegistry.Menus.POCKET_COMPUTER_NO_TERM.get() : (MenuType) ModRegistry.Menus.COMPUTER.get(), id, inventory, (p) -> holder.isValid(computer), computer), new ComputerContainerData(computer, stack));
+            return null;
         }
     }
 
+    public static boolean hasUpgrade(String upgradeid, ItemStack stack) {
+        Item id = BuiltInRegistries.ITEM.get(new ResourceLocation(upgradeid));
+        Set<Item> items = Set.of(id);
 
+        Container Inv = new ItemHandlerContainer(stack.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null));
+
+        return Inv.hasAnyOf(items);
+    }
+
+    public static Container getContainerFromLinkHolder(Entity ent) {
+        AtomicReference<Container> linkInv = new AtomicReference<>();
+
+        if (ent instanceof ItemEntity itement ) {
+            var handler = itement.getItem().getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(null);
+            if (handler != null) {
+                linkInv.set(new ItemHandlerContainer(handler));
+            }
+        } else if (ent instanceof ServerPlayer plr) {
+            CuriosApi.getCuriosHelper().findFirstCurio(plr, ItemRegistry.LINK_CORE.get()).ifPresent((slotResult) -> {
+                ItemStack linkItem = slotResult.stack();
+                var handler = linkItem.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(null);
+                if (handler != null) {
+                    linkInv.set(new ItemHandlerContainer(handler));
+                }
+            });
+
+            CuriosApi.getCuriosHelper().findFirstCurio(plr, ItemRegistry.LINK_CORE_COMMAND.get()).ifPresent((slotResult) -> {
+                ItemStack linkItem = slotResult.stack();
+                var handler = linkItem.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(null);
+                if (handler != null) {
+                    linkInv.set(new ItemHandlerContainer(handler));
+                }
+            });
+
+            for (ItemStack stack : plr.getHandSlots()) {
+                if (!stack.isEmpty()) {
+                    if (stack.is(ItemRegistry.LINK_CORE.get()) || stack.is(ItemRegistry.LINK_CORE_COMMAND.get())) {
+                        var handler = stack.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(null);
+                        if (handler != null) {
+                            linkInv.set(new ItemHandlerContainer(handler));
+                        }
+                    }
+                }
+            }
+        }
+        return linkInv.get();
+    }
+
+    public static Container getContainerFromIntegratedLinkHolder(Entity ent) {
+        AtomicReference<Container> linkInv = new AtomicReference<>();
+
+        if (ent instanceof ItemEntity itement ) {
+            var handler = itement.getItem().getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(null);
+            if (handler != null) {
+                linkInv.set(new ItemHandlerContainer(handler));
+            }
+        } else if (ent instanceof ServerPlayer plr) {
+            CuriosApi.getCuriosHelper().findFirstCurio(plr, ItemRegistry.INTEGRATED_LINK_CORE.get()).ifPresent((slotResult) -> {
+                ItemStack linkItem = slotResult.stack();
+                var handler = linkItem.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(null);
+                if (handler != null) {
+                    linkInv.set(new ItemHandlerContainer(handler));
+                }
+            });
+
+            for (ItemStack stack : plr.getHandSlots()) {
+                if (!stack.isEmpty()) {
+                    if (stack.is(ItemRegistry.INTEGRATED_LINK_CORE.get())) {
+                        var handler = stack.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(null);
+                        if (handler != null) {
+                            linkInv.set(new ItemHandlerContainer(handler));
+                        }
+                    }
+                }
+            }
+        }
+        return linkInv.get();
+    }
 
     public static LinkBrain getOrCreateBrain(ServerLevel level, LinkHolder holder, ItemStack stack, ComputerFamily family) {
         ServerComputerRegistry registry = ServerContext.get(level.getServer()).registry();
@@ -198,7 +334,7 @@ public class ComputerLib {
 
     @Nullable
     public static LinkServerComputer getServerComputer(ServerComputerRegistry registry, ItemStack stack) {
-        return (LinkServerComputer)registry.get(getSessionID(stack), getInstanceID(stack));
+        return (LinkServerComputer) registry.get(getSessionID(stack), getInstanceID(stack));
     }
 
     @Nullable

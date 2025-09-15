@@ -8,6 +8,7 @@ import dan200.computercraft.api.upgrades.UpgradeData;
 import dan200.computercraft.core.computer.ComputerSide;
 import dan200.computercraft.shared.common.IColouredItem;
 import dan200.computercraft.shared.computer.core.ServerComputer;
+import dan200.computercraft.shared.config.Config;
 import dan200.computercraft.shared.pocket.peripherals.PocketModemPeripheral;
 import dan200.computercraft.shared.pocket.peripherals.PocketSpeakerPeripheral;
 import net.minecraft.nbt.CompoundTag;
@@ -15,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
@@ -34,7 +36,7 @@ public final class IntegratedLinkBrain implements IPocketAccess {
     private int lightColour = -1;
 
     public IntegratedLinkBrain(IntegratedLinkHolder holder, @Nullable UpgradeData<IPocketUpgrade> upgrade, ServerComputer.Properties properties) {
-        this.computer = new IntegratedLinkServerComputer(this, holder, properties);
+        this.computer = new IntegratedLinkServerComputer(this, holder, properties.terminalSize(Config.TURTLE_TERM_WIDTH,Config.TURTLE_TERM_HEIGHT));
         this.holder = holder;
         this.position = holder.pos();
         this.upgrade = UpgradeData.copyOf(upgrade);
@@ -45,6 +47,14 @@ public final class IntegratedLinkBrain implements IPocketAccess {
 
     public IntegratedLinkServerComputer computer() {
         return this.computer;
+    }
+
+    public int getSelectedSlot() {
+        return 1;
+    }
+
+    public boolean canPlayerUse(Player player) {
+        return true;
     }
 
     IntegratedLinkHolder holder() {

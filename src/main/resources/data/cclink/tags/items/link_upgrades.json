@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "cclink:scanner_upgrade",
+    "cclink:sensor_upgrade",
+    "cclink:introspection_upgrade",
+    "cclink:world_upgrade",
+    "cclink:overlay_upgrade",
+    "cclink:chatty_upgrade",
+    "cclink:kinetic_upgrade",
+    "cclink:laser_upgrade"
+  ]
+}

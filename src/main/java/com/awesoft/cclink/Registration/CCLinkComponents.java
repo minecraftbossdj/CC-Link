@@ -9,6 +9,7 @@ public class CCLinkComponents {
     public static final ComputerComponent<IPocketAccess> LINK = ComputerComponent.create("cclink", "link");
     public static final ComputerComponent<IPocketAccess> INTEGRATED_LINK = ComputerComponent.create("cclink", "integrated_link");
     public static final ComputerComponent<ITurtleAccess> TURTLE_LINK = ComputerComponent.create("cclink", "turtle_link");
+    public static final ComputerComponent<IPocketAccess> ENTITYLINK = ComputerComponent.create("cclink", "entity");
 
     public CCLinkComponents() {
     }
