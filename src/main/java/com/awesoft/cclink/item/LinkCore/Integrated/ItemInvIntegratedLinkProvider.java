@@ -2,6 +2,7 @@ package com.awesoft.cclink.item.LinkCore.Integrated;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -14,8 +15,29 @@ import javax.annotation.Nullable;
 
 public class ItemInvIntegratedLinkProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
 
-    private final ItemStackHandler handler = new ItemStackHandler(7);
-    private final LazyOptional<IItemHandler> optional = LazyOptional.of(() -> handler);
+    private final ItemStack stack;
+    private final ItemStackHandler handler;
+    private final LazyOptional<IItemHandler> optional;
+
+    public static final String NBT_KEY = "Inventory";
+
+    public ItemInvIntegratedLinkProvider(ItemStack stack, int size) {
+        this.stack = stack;
+
+        this.handler = new ItemStackHandler(size) {
+            @Override
+            protected void onContentsChanged(int slot) {
+                super.onContentsChanged(slot);
+                saveToStack();
+            }
+        };
+
+        if (stack.hasTag() && stack.getTag().contains(NBT_KEY)) {
+            this.handler.deserializeNBT(stack.getTag().getCompound(NBT_KEY));
+        }
+
+        this.optional = LazyOptional.of(() -> handler);
+    }
 
     public ItemStackHandler getHandler() {
         return handler;
@@ -34,5 +56,14 @@ public class ItemInvIntegratedLinkProvider implements ICapabilityProvider, INBTS
     @Override
     public void deserializeNBT(CompoundTag nbt) {
         handler.deserializeNBT(nbt);
+    }
+
+    private void saveToStack() {
+        CompoundTag tag = stack.getOrCreateTag();
+        tag.put(NBT_KEY, handler.serializeNBT());
+    }
+
+    public void writeToStack() {
+        saveToStack();
     }
 }

@@ -75,7 +75,7 @@ public class IntegratedLinkCoreComputerItem extends Item implements IComputerIte
 
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new ItemInvIntegratedLinkProvider();
+        return new ItemInvIntegratedLinkProvider(stack,7);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class IntegratedLinkCoreComputerItem extends Item implements IComputerIte
 
         CompoundTag finalTag = tag;
         stack.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(cap -> {
-            if (cap instanceof ItemInvLinkProvider invProvider) {
+            if (cap instanceof ItemStackHandler invProvider) {
                 finalTag.put("Inventory", invProvider.serializeNBT());
             }
         });

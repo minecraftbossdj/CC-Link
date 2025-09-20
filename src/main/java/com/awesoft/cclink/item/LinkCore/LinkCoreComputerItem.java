@@ -78,7 +78,7 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
 
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new ItemInvLinkProvider();
+        return new ItemInvLinkProvider(stack,5);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class LinkCoreComputerItem extends Item implements IComputerItem, IMedia,
 
         CompoundTag finalTag = tag;
         stack.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(cap -> {
-            if (cap instanceof ItemInvLinkProvider invProvider) {
+            if (cap instanceof ItemStackHandler invProvider) {
                 finalTag.put("Inventory", invProvider.serializeNBT());
             }
         });
