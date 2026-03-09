@@ -42,7 +42,7 @@ public class IntegratedLinkScreen extends AbstractComputerScreen<IntegratedLinkM
 
     @Override
     protected TerminalWidget createTerminal() {
-        return new TerminalWidget(terminalData, input, leftPos + BORDER + AbstractComputerMenu.SIDEBAR_WIDTH, topPos + BORDER);
+        return new TerminalWidget(terminalData, computerInput, computerActions, leftPos + BORDER + AbstractComputerMenu.SIDEBAR_WIDTH, topPos + BORDER);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.awesoft.cclink.datagen.recipes;
 
-import com.awesoft.cclink.Registration.ItemRegistry;
+import com.awesoft.cclink.registration.ItemRegistry;
 import com.google.gson.JsonObject;
 import dan200.computercraft.shared.ModRegistry;
 import net.minecraft.core.RegistryAccess;

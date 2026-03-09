@@ -5,7 +5,7 @@ license = "All rights reserved"
 [[mods]] #mandatory
 # The modid of the mod
 modId = "cclink" #mandatory
-version = "6.0.2-build1" #mandatory
+version = "6.1.1" #mandatory
 # A display name for the mod
 displayName = "CCLink" #mandatory
 # The description text for the mod (multi line!) (#mandatory)
@@ -28,7 +28,7 @@ side = "BOTH"
 [[dependencies.cclink]]
 modId = "computercraft"
 mandatory = true
-versionRange = "[1.115.0,)"
+versionRange = "[1.117.0,)"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.cclink]]

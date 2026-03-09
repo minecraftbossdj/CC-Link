@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "cclink:introspection_upgrade",
+    "cclink:world_upgrade",
+    "cclink:laser_upgrade",
+    "cclink:shield_controller_upgrade",
+    "cclink:shield_controller_creative_upgrade"
+  ]
+}

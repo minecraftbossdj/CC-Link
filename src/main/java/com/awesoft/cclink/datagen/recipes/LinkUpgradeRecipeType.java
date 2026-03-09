@@ -1,6 +1,5 @@
 package com.awesoft.cclink.datagen.recipes;
 
-import com.awesoft.cclink.Registration.ItemRegistry;
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -11,8 +10,6 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
-import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 
 public class LinkUpgradeRecipeType extends ShapelessRecipe {
     private final ResourceLocation id;

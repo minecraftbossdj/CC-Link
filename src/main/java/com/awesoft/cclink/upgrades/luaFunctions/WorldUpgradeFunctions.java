@@ -2,6 +2,8 @@ package com.awesoft.cclink.upgrades.luaFunctions;
 
 import com.awesoft.cclink.CCLink;
 import com.awesoft.cclink.libs.MiscLib;
+import com.awesoft.cclink.registration.ItemRegistry;
+import com.awesoft.cclink.upgrades.luaFunctions.base.UpgradeFunctionsBase;
 import dan200.computercraft.api.lua.ILuaFunction;
 import dan200.computercraft.api.lua.MethodResult;
 import net.minecraft.core.Holder;
@@ -17,16 +19,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class WorldUpgradeFunctions {
+public class WorldUpgradeFunctions extends UpgradeFunctionsBase {
     public Map<String, Object> functions = new HashMap<>();
 
-    Entity entity;
-
-    public WorldUpgradeFunctions(Entity entity) {
+    public WorldUpgradeFunctions(Entity entity, boolean isIntegrated) {
         this.entity = entity;
+        this.UPGRADE = ItemRegistry.WORLD_UPGRADE.get();
+        this.isIntegrated = isIntegrated;
     }
 
     public ILuaFunction getWeather = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         if (entity.level().isRainingAt(entity.getOnPos())) {
             if (entity.level().isThundering()) {
                 return MethodResult.of("thundering");
@@ -40,11 +43,13 @@ public class WorldUpgradeFunctions {
     };
 
     public ILuaFunction getDimension = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         return MethodResult.of(entity.level().dimension().location().toString());
     };
 
 
     public ILuaFunction getBiome = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         Map<String, Object> biomeinfo = new HashMap<>();
 
         Holder<Biome> FeetBiomeHolder = entity.level().getBiomeManager().getBiome(entity.getOnPos());
@@ -65,10 +70,12 @@ public class WorldUpgradeFunctions {
     };
 
     public ILuaFunction canSeeSky = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         return MethodResult.of(entity.level().canSeeSky(entity.getOnPos()));
     };
 
     public ILuaFunction isDay = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         return MethodResult.of(entity.level().isDay());
     };
 

@@ -1,4 +1,4 @@
-package ace.actually.ccdrones.menu.slots;
+package com.awesoft.cclink.gui;
 
 import com.mojang.datafixers.util.Pair;
 import dan200.computercraft.api.ComputerCraftAPI;

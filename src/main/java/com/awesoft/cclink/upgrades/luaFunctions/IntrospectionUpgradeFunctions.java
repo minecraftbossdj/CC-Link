@@ -2,6 +2,8 @@ package com.awesoft.cclink.upgrades.luaFunctions;
 
 import com.awesoft.cclink.libs.ItemHandlerContainer;
 import com.awesoft.cclink.libs.LuaConverter;
+import com.awesoft.cclink.registration.ItemRegistry;
+import com.awesoft.cclink.upgrades.luaFunctions.base.UpgradeFunctionsBase;
 import dan200.computercraft.api.detail.VanillaDetailRegistries;
 import dan200.computercraft.api.lua.ILuaFunction;
 import dan200.computercraft.api.lua.LuaFunction;
@@ -22,13 +24,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class IntrospectionUpgradeFunctions {
+public class IntrospectionUpgradeFunctions extends UpgradeFunctionsBase  {
     public Map<String, Object> functions = new HashMap<>();
 
-    Entity entity;
-
-    public IntrospectionUpgradeFunctions(Entity entity) {
+    public IntrospectionUpgradeFunctions(Entity entity, boolean isIntegrated) {
         this.entity = entity;
+        this.UPGRADE = ItemRegistry.INTROSPECTION_UPGRADE.get();
+        this.isIntegrated = isIntegrated;
     }
 
     public final ServerPlayer getPlayer() {
@@ -49,6 +51,7 @@ public class IntrospectionUpgradeFunctions {
     }
 
     public MethodResult moveItemTo(Container from, Container to, int fromSlot, int limit, int toSlot) {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         ItemStack fromItem = from.getItem(Math.max(0,fromSlot - 1));
         ItemStack toItem = to.getItem(Math.max(0,toSlot - 1));
 
@@ -94,6 +97,7 @@ public class IntrospectionUpgradeFunctions {
 
     //lua functions
     public ILuaFunction list = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         var inv = getInventory();
         var ender = getEnderInventory();
         if (inv == null || ender == null) {return MethodResult.of(false,"Player doesnt exist!");}
@@ -116,6 +120,7 @@ public class IntrospectionUpgradeFunctions {
     };
 
     public ILuaFunction moveItems = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         var inv = getInventory();
         var ender = getEnderInventory();
         if (inv == null || ender == null) {return MethodResult.of(false,"Player doesnt exist!");}
@@ -141,6 +146,7 @@ public class IntrospectionUpgradeFunctions {
     };
 
     public ILuaFunction getItemDetail = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         var inv = getInventory();
         var ender = getEnderInventory();
         if (inv == null || ender == null) {return MethodResult.of(false,"Player doesnt exist!");}
@@ -159,6 +165,7 @@ public class IntrospectionUpgradeFunctions {
     };
 
     public ILuaFunction getItemLimit = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         var inv = getInventory();
         var ender = getEnderInventory();
 
@@ -178,6 +185,7 @@ public class IntrospectionUpgradeFunctions {
     };
 
     public ILuaFunction size = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         var inv = getInventory();
         var ender = getEnderInventory();
 

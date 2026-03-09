@@ -3,6 +3,8 @@ package com.awesoft.cclink.upgrades.luaFunctions;
 import com.awesoft.cclink.hudoverlay.packets.HUDOverlayUpdatePacket;
 import com.awesoft.cclink.hudoverlay.packets.PacketManager;
 import com.awesoft.cclink.libs.PacketCooldownManager;
+import com.awesoft.cclink.registration.ItemRegistry;
+import com.awesoft.cclink.upgrades.luaFunctions.base.UpgradeFunctionsBase;
 import dan200.computercraft.api.detail.VanillaDetailRegistries;
 import dan200.computercraft.api.lua.ILuaFunction;
 import dan200.computercraft.api.lua.LuaFunction;
@@ -16,13 +18,13 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.*;
 
-public class OverlayUpgradeFunctions {
+public class OverlayUpgradeFunctions extends UpgradeFunctionsBase {
     public Map<String, Object> functions = new HashMap<>();
 
-    Entity entity;
-
-    public OverlayUpgradeFunctions(Entity entity) {
+    public OverlayUpgradeFunctions(Entity entity, boolean isIntegrated) {
         this.entity = entity;
+        this.UPGRADE = ItemRegistry.OVERLAY_UPGRADE.get();
+        this.isIntegrated = isIntegrated;
     }
 
     public final ServerPlayer getPlayer() {
@@ -52,6 +54,7 @@ public class OverlayUpgradeFunctions {
     List<HUDOverlayUpdatePacket.Entry> entries = new ArrayList<>();
 
     ILuaFunction send = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         if (PacketCooldownManager.canSendPacket(getOwnerUUID())) {
             if (getPlayer() != null) {
                 HUDOverlayUpdatePacket packet = new HUDOverlayUpdatePacket(Objects.requireNonNull(getPlayer()).getUUID(), entries);
@@ -67,6 +70,7 @@ public class OverlayUpgradeFunctions {
     };
 
     ILuaFunction addOrUpdateTextElement = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         entries.add(HUDOverlayUpdatePacket.Entry.text(
                 args.getString(0),
                 args.getString(1),
@@ -83,6 +87,7 @@ public class OverlayUpgradeFunctions {
 
 
     ILuaFunction removeTextElement = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         entries.add(HUDOverlayUpdatePacket.Entry.text(
                 args.getString(0),
                 "",
@@ -97,6 +102,7 @@ public class OverlayUpgradeFunctions {
 
 
     ILuaFunction clearText = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         entries.add(HUDOverlayUpdatePacket.Entry.text(
                 "",
                 "",
@@ -113,6 +119,7 @@ public class OverlayUpgradeFunctions {
 
     //rightbound string :wilted_rose:
     ILuaFunction addOrUpdateRightboundTextElement = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         entries.add(HUDOverlayUpdatePacket.Entry.text(
                 args.getString(0),
                 args.getString(1),
@@ -129,6 +136,7 @@ public class OverlayUpgradeFunctions {
 
 
     ILuaFunction removeRightboundTextElement = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         entries.add(HUDOverlayUpdatePacket.Entry.text(
                 args.getString(0),
                 "",
@@ -143,6 +151,7 @@ public class OverlayUpgradeFunctions {
 
 
     ILuaFunction clearRightboundText = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         entries.add(HUDOverlayUpdatePacket.Entry.text(
                 "",
                 "",
@@ -159,6 +168,7 @@ public class OverlayUpgradeFunctions {
 
     //box elementer
     ILuaFunction addOrUpdateRectElement = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         entries.add(HUDOverlayUpdatePacket.Entry.rect(
                 args.getString(0),
                 args.getInt(1),
@@ -175,6 +185,7 @@ public class OverlayUpgradeFunctions {
 
 
     ILuaFunction removeRectElement = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         entries.add(HUDOverlayUpdatePacket.Entry.rect(
                 args.getString(0),
                 0,0,0,0,0,0,
@@ -186,6 +197,7 @@ public class OverlayUpgradeFunctions {
 
 
     ILuaFunction clearRect = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         entries.add(HUDOverlayUpdatePacket.Entry.rect(
                 "",
                 0,0,0,0,0,0,
@@ -198,6 +210,7 @@ public class OverlayUpgradeFunctions {
 
 
     ILuaFunction addOrUpdateItemElement = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         entries.add(HUDOverlayUpdatePacket.Entry.item(
                 args.getString(0),
                 args.getString(1),
@@ -211,6 +224,7 @@ public class OverlayUpgradeFunctions {
 
 
     ILuaFunction removeItemElement = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         entries.add(HUDOverlayUpdatePacket.Entry.item(
                 args.getString(0),
                 "",0,0,
@@ -222,6 +236,7 @@ public class OverlayUpgradeFunctions {
 
 
     ILuaFunction clearItem = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         entries.add(HUDOverlayUpdatePacket.Entry.item(
                 "","",0,0,
                 false,
@@ -232,6 +247,7 @@ public class OverlayUpgradeFunctions {
 
 
     ILuaFunction clearAll = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
         entries.add(HUDOverlayUpdatePacket.Entry.text(
                 "",
                 "",

@@ -1,34 +1,73 @@
 package com.awesoft.cclink.upgrades.luaFunctions;
 
-import com.awesoft.cclink.hudoverlay.packets.HUDOverlayUpdatePacket;
-import dan200.computercraft.api.lua.IComputerSystem;
+import com.awesoft.cclink.registration.ItemRegistry;
+import com.awesoft.cclink.item.ModularLinkArmor;
+import com.awesoft.cclink.upgrades.luaFunctions.base.UpgradeFunctionsBase;
 import dan200.computercraft.api.lua.ILuaFunction;
 import dan200.computercraft.api.lua.MethodResult;
-import dan200.computercraft.api.pocket.IPocketAccess;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class KineticUpgradeFunctions {
+import static com.awesoft.cclink.CCLinkConfig.KINETIC_ENERGY_MULTIPLIER;
+
+public class KineticUpgradeFunctions extends UpgradeFunctionsBase {
     public Map<String, Object> functions = new HashMap<>();
 
-    Entity entity;
+    boolean isLink;
 
-    public KineticUpgradeFunctions(Entity entity) {
+    public KineticUpgradeFunctions(Entity entity, boolean isLink, boolean isIntegrated) {
         this.entity = entity;
+        this.isLink = isLink;
+        this.UPGRADE = ItemRegistry.KINETIC_UPGRADE.get();
+        this.isIntegrated = isIntegrated;
     }
 
     public ILuaFunction launch = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
+        ItemStack leggings = null;
+        if (!isLink) {
+            if (entity instanceof ServerPlayer plr) {
+                if (plr.getItemBySlot(EquipmentSlot.LEGS).is(ItemRegistry.MODULAR_LINK_LEGGINGS.get()))
+                    leggings = plr.getItemBySlot(EquipmentSlot.LEGS);
+            }
+            if (leggings == null) return null;
+        }
+
         float power = (float) args.getDouble(2);
-        if (power <= 4) {
+
+        AtomicBoolean canRun = new AtomicBoolean(false);
+        if (!isLink) {
+            if (leggings.getItem() instanceof ModularLinkArmor) {
+                leggings.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> {
+                    int energyAmnt = (int) (power * KINETIC_ENERGY_MULTIPLIER.get().floatValue());
+                    if (energy.getEnergyStored() >= energyAmnt) {
+                        energy.extractEnergy(energyAmnt, false);
+                        canRun.set(true);
+                    } else {
+                        canRun.set(false);
+                    }
+                });
+            }
+        }
+        if (isLink) canRun.set(true);
+        if (power <= 4 && canRun.get()) {
             launch(entity, (float) args.getDouble(0), (float) args.getDouble(1), (float) args.getDouble(2));
             return MethodResult.of(true);
         }
-        return MethodResult.of(false,"Power cannot be above 4!");
+        if (power > 4) {
+            return MethodResult.of(false, "Power cannot be above 4!");
+        } else {
+            return MethodResult.of(false, "Not Enough Energy!");
+        }
     };
 
     private static final double TERMINAL_VELOCITY = -2;

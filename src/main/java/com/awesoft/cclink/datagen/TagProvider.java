@@ -1,7 +1,7 @@
 package com.awesoft.cclink.datagen;
 
 import com.awesoft.cclink.CCLink;
-import com.awesoft.cclink.Registration.BlockRegistry;
+import com.awesoft.cclink.registration.BlockRegistry;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;

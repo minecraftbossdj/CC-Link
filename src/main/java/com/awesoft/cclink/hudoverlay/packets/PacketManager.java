@@ -15,7 +15,6 @@ public class PacketManager {
         ServerPlayer player = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(playerUUID);
 
         if (player == null) {
-            System.err.println("player actually is cooked");
             return;
         }
 

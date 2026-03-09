@@ -21,6 +21,47 @@ import java.util.Optional;
 
 public class RaycastingUtil {
 
+    public static Map<String, Object> raycast(double reach, ITurtleAccess turtle, Direction dir) {
+
+        double limitedReach = Math.min(5, Math.max(1, reach));
+
+        BlockPos pos = turtle.getPosition();
+
+        Level level = turtle.getLevel();
+
+
+        Vec3 direction = Vec3.atLowerCornerOf(dir.getNormal());
+
+        Vec3 start = Vec3.atCenterOf(pos).add(direction.scale(0.5));
+
+        Vec3 end = start.add(direction.scale(limitedReach));
+
+
+
+        BlockHitResult blockHit = level.clip(new ClipContext(
+                start,
+                end,
+                ClipContext.Block.OUTLINE,
+                ClipContext.Fluid.NONE,
+                null
+        ));
+
+        Map<String, Object> info = new HashMap<>();
+        if (blockHit.getType() == HitResult.Type.BLOCK) {
+
+            BlockPos hitPos = blockHit.getBlockPos();
+
+            Block blk = level.getBlockState(hitPos).getBlock();
+
+            info.put("id", ForgeRegistries.BLOCKS.getKey(blk).toString());
+            info.put("x", hitPos.getX());
+            info.put("y", hitPos.getY());
+            info.put("z", hitPos.getZ());
+            info.put("distance",pos.getCenter().distanceTo(hitPos.getCenter()));
+        }
+        return info;
+    }
+
     public static Optional<Entity> raycastEntity(Player player, double distance) {
         Level world = player.level();
         Vec3 startVec = player.getEyePosition();
@@ -62,47 +103,6 @@ public class RaycastingUtil {
         }
 
         return Optional.ofNullable(closestEntity);
-    }
-
-    public static Map<String, Object> raycast(double reach, ITurtleAccess turtle, Direction dir) {
-
-        double limitedReach = Math.min(5, Math.max(1, reach));
-
-        BlockPos pos = turtle.getPosition();
-
-        Level level = turtle.getLevel();
-
-
-        Vec3 direction = Vec3.atLowerCornerOf(dir.getNormal());
-
-        Vec3 start = Vec3.atCenterOf(pos).add(direction.scale(0.5));
-
-        Vec3 end = start.add(direction.scale(limitedReach));
-
-
-
-        BlockHitResult blockHit = level.clip(new ClipContext(
-                start,
-                end,
-                ClipContext.Block.OUTLINE,
-                ClipContext.Fluid.NONE,
-                null
-        ));
-
-        Map<String, Object> info = new HashMap<>();
-        if (blockHit.getType() == HitResult.Type.BLOCK) {
-
-            BlockPos hitPos = blockHit.getBlockPos();
-
-            Block blk = level.getBlockState(hitPos).getBlock();
-
-            info.put("id", ForgeRegistries.BLOCKS.getKey(blk).toString());
-            info.put("x", hitPos.getX());
-            info.put("y", hitPos.getY());
-            info.put("z", hitPos.getZ());
-            info.put("distance",pos.getCenter().distanceTo(hitPos.getCenter()));
-        }
-        return info;
     }
 
 }

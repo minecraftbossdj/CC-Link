@@ -1,6 +1,6 @@
 package com.awesoft.cclink.events;
 
-import com.awesoft.cclink.Registration.ItemRegistry;
+import com.awesoft.cclink.registration.ItemRegistry;
 import com.awesoft.cclink.libs.ComputerLib;
 import dan200.computercraft.shared.computer.core.ServerComputer;
 import dan200.computercraft.shared.computer.core.ServerContext;

@@ -1,23 +1,27 @@
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net/' }
-        mavenCentral()
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public' }
         maven { url = 'https://maven.parchmentmc.org' }
+        maven {
+            url = 'https://repo.spongepowered.org/repository/maven-public/'
+            content { includeGroup "org.spongepowered" }
+        }
+        mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
         classpath "org.parchmentmc:librarian:${librarian_version}"
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
 
 plugins {
     id 'eclipse'
     id 'idea'
-
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
+apply plugin: 'org.spongepowered.mixin'
 
 group = 'com.awesoft.cclink'
 version = ccl_version+'-'+mc_version
@@ -110,6 +114,8 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
     implementation fg.deobf("cc.tweaked:cc-tweaked-1.20.1-core:${cc_version}")
     implementation fg.deobf("cc.tweaked:cc-tweaked-1.20.1-core-api:${cc_version}")
     implementation fg.deobf("cc.tweaked:cc-tweaked-1.20.1-common-api:${cc_version}")
@@ -119,6 +125,8 @@ dependencies {
     //runtimeOnly fg.deobf("curse.maven:advanced-peripherals-431725:5256278")
 
     implementation fg.deobf("curse.maven:curios-309927:6418456")
+
+    runtimeOnly fg.deobf("curse.maven:mekanism-268560:6552911")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

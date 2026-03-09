@@ -1,23 +1,17 @@
 package com.awesoft.cclink;
 
-import com.awesoft.cclink.Registration.*;
+import com.awesoft.cclink.registration.*;
 import com.awesoft.cclink.client.LinkTurtleRenderer;
 import com.awesoft.cclink.datagen.recipes.ModRecipes;
+import com.awesoft.cclink.gui.armor.ArmorScreen;
 import com.awesoft.cclink.gui.client.LinkScreen;
 import com.awesoft.cclink.gui.integrated.IntegratedLinkScreen;
 import com.awesoft.cclink.networking.OpenLinkNetworkHandler;
-import com.awesoft.cclink.networking.OpenLinkPacket;
 import com.awesoft.cclink.networking.OverlayNetworkHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
-import net.minecraft.network.chat.Component;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -25,11 +19,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.SlotResult;
-
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 @Mod("cclink")
@@ -55,8 +44,10 @@ public class CCLink {
         LOGGER.info("RAHHHHH MOD RECIPES JUMPSCARE! did i scare you? I'm sure scared, ugh I dont wanna touch datagen ever again :sob:");
         CCLinkConfig.register(ModLoadingContext.get());
         LOGGER.info("heloer!! -from config! :3");
-        CCMenus.registerMenu();
+        CCMenus.registerMenu(bus);
         LOGGER.info("uh oh that MIGHT be the menus ngl");
+        PocketRegistry.POCKET_SERIALIZER.register(bus);
+        LOGGER.info("yoo pocket upgrades? hell yeah");
 
 
         MinecraftForge.EVENT_BUS.register(this);
@@ -76,6 +67,8 @@ public class CCLink {
 
         MenuScreens.register(CCMenus.LINK_MENU.get(), LinkScreen::new);
         MenuScreens.register(CCMenus.INTEGRATED_LINK_MENU.get(), IntegratedLinkScreen::new);
+
+        MenuScreens.register(CCMenus.ARMOR_MENU.get(), ArmorScreen::new);
         LOGGER.info("client startup trolling complete, returning to HQ");
     }
 

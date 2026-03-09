@@ -1,6 +1,8 @@
 package com.awesoft.cclink.upgrades.luaFunctions;
 
 import com.awesoft.cclink.CCLink;
+import com.awesoft.cclink.registration.ItemRegistry;
+import com.awesoft.cclink.upgrades.luaFunctions.base.UpgradeFunctionsBase;
 import dan200.computercraft.api.lua.IComputerSystem;
 import dan200.computercraft.api.lua.ILuaFunction;
 import dan200.computercraft.api.lua.MethodResult;
@@ -23,15 +25,16 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public class ScannerUpgradeFunctions {
+public class ScannerUpgradeFunctions extends UpgradeFunctionsBase {
     public Map<String, Object> functions = new HashMap<>();
 
-    Entity entity;
-    IComputerSystem computer;
+    int compId;
 
-    public ScannerUpgradeFunctions(Entity entity, IComputerSystem computer) {
+    public ScannerUpgradeFunctions(Entity entity, int id, boolean isIntegrated) {
         this.entity = entity;
-        this.computer = computer;
+        this.compId = id;
+        this.UPGRADE = ItemRegistry.SCANNER_UPGRADE.get();
+        this.isIntegrated = isIntegrated;
     }
 
 
@@ -127,11 +130,12 @@ public class ScannerUpgradeFunctions {
     }
 
     public ILuaFunction scan = args -> {
-        if (!canCallFunction(computer.getID())) {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
+        if (!canCallFunction(compId)) {
             return MethodResult.of(null,"On cooldown!");
 
         }
-        lastCalledMap.put(computer.getID(), (int) (System.currentTimeMillis() % Integer.MAX_VALUE)); //ok yes it MIGHT be universal but you're not NORMALLY gonna get 2 of the same ids so... who cares :clueless:
+        lastCalledMap.put(compId, (int) (System.currentTimeMillis() % Integer.MAX_VALUE)); //ok yes it MIGHT be universal but you're not NORMALLY gonna get 2 of the same ids so... who cares :clueless:
 
         if (args.getInt(0) > 8) return MethodResult.of(false,"Cannot be bigger than 8 block radius!"); //holy lazy
         int radius = args.getInt(0);
@@ -139,7 +143,10 @@ public class ScannerUpgradeFunctions {
 
     };
 
-    public ILuaFunction getOperationCooldown = args -> MethodResult.of(getRemainingCooldownTime(computer.getID()));
+    public ILuaFunction getOperationCooldown = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
+        return MethodResult.of(getRemainingCooldownTime(compId));
+    };
 
 
 

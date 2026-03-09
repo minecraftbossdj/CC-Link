@@ -1,27 +1,15 @@
 package com.awesoft.cclink.block.LinkTurtle;
 
-import com.awesoft.cclink.Registration.CCLinkComponents;
+import com.awesoft.cclink.registration.CCLinkComponents;
 import dan200.computercraft.api.component.ComputerComponents;
-import dan200.computercraft.api.peripheral.IPeripheral;
-import dan200.computercraft.core.computer.ComputerSide;
-import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.computer.core.ComputerFamily;
 import dan200.computercraft.shared.computer.core.ServerComputer;
-import dan200.computercraft.shared.peripheral.modem.ModemState;
-import dan200.computercraft.shared.peripheral.modem.wireless.WirelessModemPeripheral;
 import dan200.computercraft.shared.turtle.blocks.TurtleBlockEntity;
 import dan200.computercraft.shared.turtle.core.TurtleBrain;
-import dan200.computercraft.shared.turtle.upgrades.TurtleModem;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.function.IntSupplier;

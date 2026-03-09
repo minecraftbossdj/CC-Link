@@ -1,33 +1,22 @@
 package com.awesoft.cclink.gui.integrated;
 
-import ace.actually.ccdrones.menu.slots.LinkUpgradeSlot;
-import com.awesoft.cclink.Registration.CCMenus;
-import com.awesoft.cclink.Registration.ItemRegistry;
-import com.awesoft.cclink.item.LinkCore.Integrated.IntegratedLinkBrain;
-import com.awesoft.cclink.item.LinkCore.LinkBrain;
-import com.awesoft.cclink.libs.ItemHandlerContainer;
+import com.awesoft.cclink.registration.CCMenus;
+import com.awesoft.cclink.gui.LinkUpgradeSlot;
 import dan200.computercraft.shared.computer.core.ComputerFamily;
 import dan200.computercraft.shared.computer.core.ServerComputer;
 import dan200.computercraft.shared.computer.inventory.AbstractComputerMenu;
-import dan200.computercraft.shared.container.SingleContainerData;
 import dan200.computercraft.shared.network.container.ComputerContainerData;
 
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import top.theillusivec4.curios.api.CuriosApi;
 
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
 public class IntegratedLinkMenu extends AbstractComputerMenu {

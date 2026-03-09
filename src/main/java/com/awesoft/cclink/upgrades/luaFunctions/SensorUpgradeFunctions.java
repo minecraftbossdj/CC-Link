@@ -1,6 +1,8 @@
 package com.awesoft.cclink.upgrades.luaFunctions;
 
 import com.awesoft.cclink.libs.LuaConverter;
+import com.awesoft.cclink.registration.ItemRegistry;
+import com.awesoft.cclink.upgrades.luaFunctions.base.UpgradeFunctionsBase;
 import dan200.computercraft.api.lua.IComputerSystem;
 import dan200.computercraft.api.lua.ILuaFunction;
 import dan200.computercraft.api.lua.MethodResult;
@@ -24,15 +26,16 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public class SensorUpgradeFunctions {
+public class SensorUpgradeFunctions extends UpgradeFunctionsBase  {
     public Map<String, Object> functions = new HashMap<>();
 
-    Entity entity;
-    IComputerSystem computer;
+    int compId;
 
-    public SensorUpgradeFunctions(Entity entity, IComputerSystem computer) {
+    public SensorUpgradeFunctions(Entity entity, int id, boolean isIntegrated) {
         this.entity = entity;
-        this.computer = computer;
+        this.compId = id;
+        this.UPGRADE = ItemRegistry.SENSOR_UPGRADE.get();
+        this.isIntegrated = isIntegrated;
     }
 
 
@@ -58,14 +61,15 @@ public class SensorUpgradeFunctions {
     }
 
     public ILuaFunction sense = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
 
         List<Object> entitiesList = new ArrayList<>(List.of());
 
-        if (!canCallFunction(computer.getID())) {
+        if (!canCallFunction(compId)) {
             return MethodResult.of(null,"On cooldown!");
 
         }
-        lastCalledMap.put(computer.getID(), (int) (System.currentTimeMillis() % Integer.MAX_VALUE)); //ok yes it MIGHT be universal but you're not NORMALLY gonna get 2 of the same ids so... who cares :clueless:
+        lastCalledMap.put(compId, (int) (System.currentTimeMillis() % Integer.MAX_VALUE)); //ok yes it MIGHT be universal but you're not NORMALLY gonna get 2 of the same ids so... who cares :clueless:
 
         if (args.getInt(0) > 16) return MethodResult.of(false,"Cannot be bigger than 16 block radius!"); //holy lazy
         int radius = args.getInt(0);
@@ -89,7 +93,10 @@ public class SensorUpgradeFunctions {
 
     };
 
-    public ILuaFunction getOperationCooldown = args -> MethodResult.of(getRemainingCooldownTime(computer.getID()));
+    public ILuaFunction getOperationCooldown = args -> {
+        if (!checkUpgrade()) return MethodResult.of(false, "Upgrade not equipped!");
+        return MethodResult.of(getRemainingCooldownTime(compId));
+    };
 
     public Map<String, Object> getFunctions() {
         functions.put("sense",sense);

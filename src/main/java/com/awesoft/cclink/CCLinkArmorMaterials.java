@@ -10,7 +10,18 @@ import net.minecraft.world.item.crafting.Ingredient;
 import java.util.function.Supplier;
 
 public enum CCLinkArmorMaterials implements ArmorMaterial {
-    LINK_INTERFACE("link_interface",0, new int[]{0, 0, 0, 0},0, SoundEvents.ARMOR_EQUIP_IRON,0.0f,0.0f, () -> Ingredient.of(Items.IRON_INGOT));
+    LINK_INTERFACE("link_interface",0, new int[]{0, 0, 0, 0},0, SoundEvents.ARMOR_EQUIP_IRON,0.0f,0.0f, () -> Ingredient.of(Items.IRON_INGOT)),
+    LINK_ARMOR(
+    "link_armor",
+            15, // total protection (helmet=2, chest=6, legs=5, boots=2)
+            new int[]{2, 5, 6, 2}, // slot-specific protection values
+            9, // enchantability
+    SoundEvents.ARMOR_EQUIP_IRON, // equip sound
+            0.0f, // toughness
+            0.0f, // knockback resistance
+            () -> Ingredient.of(Items.IRON_INGOT) // repair ingredient
+            );
+
 
     private final String name;
     private final int durabilityMultiplier;

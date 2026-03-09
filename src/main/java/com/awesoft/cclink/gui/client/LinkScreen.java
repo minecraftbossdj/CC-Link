@@ -45,7 +45,7 @@ public class LinkScreen extends AbstractComputerScreen<LinkMenu> {
 
     @Override
     protected TerminalWidget createTerminal() {
-        return new TerminalWidget(terminalData, input, leftPos + BORDER + AbstractComputerMenu.SIDEBAR_WIDTH, topPos + BORDER);
+        return new TerminalWidget(terminalData, this.computerInput, this.computerActions, leftPos + BORDER + AbstractComputerMenu.SIDEBAR_WIDTH, topPos + BORDER);
     }
 
     @Override

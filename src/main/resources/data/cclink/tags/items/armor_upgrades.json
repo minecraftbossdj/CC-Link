@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "cclink:battery_upgrade_tier1",
+    "cclink:battery_upgrade_tier2",
+    "cclink:battery_upgrade_tier3"
+  ]
+}

@@ -1,28 +1,23 @@
 package com.awesoft.cclink.networking;
 
 import com.awesoft.cclink.CCLink;
-import com.awesoft.cclink.Registration.ItemRegistry;
-import com.awesoft.cclink.item.LinkCore.Integrated.IntegratedLinkBrain;
-import com.awesoft.cclink.item.LinkCore.Integrated.IntegratedLinkHolder;
-import com.awesoft.cclink.item.LinkCore.Integrated.IntegratedLinkServerComputer;
-import com.awesoft.cclink.item.LinkCore.LinkBrain;
-import com.awesoft.cclink.item.LinkCore.LinkCoreComputerItem;
-import com.awesoft.cclink.item.LinkCore.LinkHolder;
-import com.awesoft.cclink.item.LinkCore.LinkServerComputer;
+import com.awesoft.cclink.registration.ItemRegistry;
+import com.awesoft.cclink.item.linkCore.integrated.IntegratedLinkBrain;
+import com.awesoft.cclink.item.linkCore.integrated.IntegratedLinkHolder;
+import com.awesoft.cclink.item.linkCore.integrated.IntegratedLinkServerComputer;
+import com.awesoft.cclink.item.linkCore.LinkBrain;
+import com.awesoft.cclink.item.linkCore.LinkHolder;
+import com.awesoft.cclink.item.linkCore.LinkServerComputer;
 import com.awesoft.cclink.libs.ComputerLib;
 import dan200.computercraft.api.pocket.IPocketUpgrade;
-import dan200.computercraft.core.computer.Computer;
 import dan200.computercraft.core.computer.ComputerSide;
 import dan200.computercraft.shared.computer.core.ComputerFamily;
-import dan200.computercraft.shared.util.InventoryUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.server.ServerLifecycleHooks;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotResult;
 

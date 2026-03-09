@@ -1,8 +1,7 @@
 package com.awesoft.cclink.client;
 
-import com.awesoft.cclink.CCLink;
-import com.awesoft.cclink.Registration.ItemRegistry;
-import com.awesoft.cclink.Registration.Keybinds;
+import com.awesoft.cclink.registration.ItemRegistry;
+import com.awesoft.cclink.registration.Keybinds;
 import com.awesoft.cclink.networking.OpenLinkNetworkHandler;
 import com.awesoft.cclink.networking.OpenLinkPacket;
 import net.minecraft.client.Minecraft;
