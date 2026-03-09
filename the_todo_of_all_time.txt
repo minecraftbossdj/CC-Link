@@ -1,0 +1,20 @@
+* Finish link armor
+* Update to 1.21.1 for multiloader
+# Add module interface
+# Add Link Modules Turtle upgrades
+& Start working in kotlin
+% Port to multiloader? (when architectury locks in with loom as cc's loom is NEWER than architectury's loom)
+% Use trinkets with multiloader (duh)
+$ Add Optional Compat with Curios + Trinkets
+% After multiloader port, possible compat with ccx?
+* Polish code
+# Update Wiki
+# Screen Size getter for link
+* Fix speaker on integrated link
+$ Change "integrated" for something better
+
+Priority list:
+* = HIGHEST
+# = MID
+$ = LOWEST
+% = WAITING ON DEPEND
